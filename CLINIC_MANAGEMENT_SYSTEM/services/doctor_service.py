@@ -28,7 +28,6 @@ class DoctorService:
         email,
         address,
         consultation_fee,
-        consultation_duration,
         doctor_status,
         joining_date
     ):
@@ -50,11 +49,6 @@ class DoctorService:
         validate_positive_number(
             consultation_fee,
             "Consultation Fee"
-        )
-
-        validate_positive_number(
-            consultation_duration,
-            "Consultation Duration"
         )
 
         validate_date_not_future(dob)
@@ -116,7 +110,7 @@ class DoctorService:
                 email=email,
                 address=address,
                 consultation_fee=consultation_fee,
-                consultation_duration=consultation_duration,
+                consultation_duration=12,
                 doctor_status=doctor_status,
                 joining_date=joining_date
             )
@@ -148,6 +142,67 @@ class DoctorService:
     
         finally:
             session.close()
+            
+    @staticmethod
+    def search_doctor_by_id(
+        doctor_id
+    ):
+
+        session = get_session()
+        
+        try:
+            
+            doctor = session.execute(
+                select(DoctorMaster).where(
+                    DoctorMaster.doctor_id == doctor_id
+                )
+            ).scalar_one_or_none()
+
+            return doctor
+
+        finally:
+            session.close()
+            
+    @staticmethod
+    def search_doctor_by_phone(
+        phone
+    ):
+
+        session = get_session()
+
+        try:
+
+            doctor = session.execute(
+                select(DoctorMaster).where(
+                    DoctorMaster.phone == phone
+                )
+            ).scalar_one_or_none()
+
+            return doctor
+
+        finally:
+            session.close()
+    
+    @staticmethod
+    def search_doctor_by_license(
+        license_no
+    ):
+
+        session = get_session()
+
+        try:
+
+            doctor = session.execute(
+                select(DoctorMaster).where(
+                    DoctorMaster.license_no == license_no
+                )
+            ).scalar_one_or_none()
+
+            return doctor
+
+        finally:
+            session.close()
+    
     @staticmethod
     def update_doctor(
         doctor_id,
@@ -156,7 +211,6 @@ class DoctorService:
         email,
         address,
         consultation_fee,
-        consultation_duration,
         doctor_status
     ):
 
@@ -180,17 +234,11 @@ class DoctorService:
                 "Consultation Fee"
             )
 
-            validate_positive_number(
-                consultation_duration,
-                "Consultation Duration"
-            )
-
             doctor.doctor_name = doctor_name
             doctor.phone = phone
             doctor.email = email
             doctor.address = address
             doctor.consultation_fee = consultation_fee
-            doctor.consultation_duration = consultation_duration
             doctor.doctor_status = doctor_status
 
             session.commit()

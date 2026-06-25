@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from services.appointment_service import AppointmentService
 from services.patient_service import PatientService
 from services.doctor_service import DoctorService
-from utils.token_helper import TokenHelper
 from services.doctor_availability_service import (DoctorAvailabilityService)
 from utils.input_helper import (InputHelper,OperationCancelled)
 
@@ -94,12 +93,9 @@ class AppointmentMenu:
 
             elif date_option == "4":
 
-                appointment_date = datetime.strptime(
-                    InputHelper.get_input(
-                        "ENTER APPOINTMENT DATE (YYYY-MM-DD): "
-                    ),
-                    "%Y-%m-%d"
-                ).date()
+                appointment_date = InputHelper.get_date(
+                    "ENTER APPOINTMENT DATE (YYYY-MM-DD): "
+                )
 
             else:
 
@@ -207,19 +203,17 @@ class AppointmentMenu:
                         f"{token_end.strftime('%I:%M %p')})"
                     )
                 
-            selected_token = int(
-                InputHelper.get_input(
-                    "\nENTER TOKEN NUMBER: "
-                )
+            selected_token = InputHelper.get_integer(
+                "\nENTER TOKEN NUMBER: "
             )
 
             reason_for_visit = InputHelper.get_input(
                 "ENTER REASON FOR VISIT: "
             )
 
-            confirm = InputHelper.get_input(
+            confirm = InputHelper.get_confirmation(
                 "\nCONFIRM APPOINTMENT (Y/N): "
-            ).strip().upper()
+            )
             
             if selected_token in booked_tokens:
 
@@ -270,111 +264,167 @@ class AppointmentMenu:
     @staticmethod
     def search_appointment():
 
-        try:
-            
+        while True:
+
             print(
-                "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
-            )
+                "\n===== SEARCH APPOINTMENT ====="
+        )
 
-            appointment_id = InputHelper.get_input(
-                "ENTER APPOINTMENT ID: "
-            ).strip().upper()
+            print("1. SEARCH BY APPOINTMENT ID")
+            print("2. SEARCH BY PATIENT ID")
+            print("3. SEARCH BY DOCTOR ID")
+            print("4. BACK")
 
-            appointment = (
-                AppointmentService.search_appointment(
-                    appointment_id
-                )
-            )
+            
 
-            if appointment:
-
-                print(
-                    "\n===== APPOINTMENT DETAILS ====="
+            try:
+                
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
                 )
 
-                print(
-                    "APPOINTMENT ID :",
-                    appointment.appointment_id
-                )
+                if choice == "1":
 
-                patient = PatientService.search_patient(
-                    appointment.patient_id
-                )
+                    appointment = (
+                        AppointmentService.search_appointment_by_id(
+                            InputHelper.get_input(
+                                "ENTER APPOINTMENT ID: "
+                            ).strip().upper()
+                        )
+                    )
 
-                print(
-                    "PATIENT :",
-                    appointment.patient_id,
-                    "-",
-                    patient.patient_name
-                )
+                    if not appointment:
 
-                doctor = DoctorService.search_doctor(
-                    appointment.doctor_id
-                )
+                        print(
+                            "APPOINTMENT NOT FOUND"
+                        )
 
-                print(
-                    "DOCTOR :",
-                    appointment.doctor_id,
-                    "-",
-                    doctor.doctor_name
-                )
+                        continue
 
-                session_obj = (
-                    AppointmentService.get_session_details(
+                    print(
+                        "\n===== APPOINTMENT DETAILS ====="
+                    )
+
+                    print(
+                        "APPOINTMENT ID :",
+                        appointment.appointment_id
+                    )
+
+                    print(
+                        "PATIENT ID :",
+                        appointment.patient_id
+                    )
+
+                    print(
+                        "DOCTOR ID :",
+                        appointment.doctor_id
+                    )
+
+                    print(
+                        "DATE :",
+                        appointment.appointment_date
+                    )
+
+                    print(
+                        "SESSION :",
                         appointment.session_id
                     )
-                )
 
-                print(
-                    "SESSION :",
-                    appointment.session_id,
-                    "-",
-                    session_obj.session_name
-                    )
-
-                print(
-                    "APPOINTMENT DATE :",
-                    appointment.appointment_date
-                )
-
-                print(
-                    "TOKEN NO :",
-                    appointment.token_no
-                )
-                
-                token_start,token_end = (
-                    TokenHelper.get_token_time(
-                        session_obj.start_time,
+                    print(
+                        "TOKEN :",
                         appointment.token_no
                     )
-                )
+
+                    print(
+                        "STATUS :",
+                        appointment.appointment_status
+                    )
+
+                elif choice == "2":
+
+                    appointments = (
+                        AppointmentService.search_appointments_by_patient(
+                            InputHelper.get_input(
+                                "ENTER PATIENT ID: "
+                            ).strip().upper()
+                        )
+                    )
+
+                    if not appointments:
+
+                        print(
+                            "NO APPOINTMENTS FOUND"
+                        )
+
+                        continue
+
+                    print(
+                        "\n===== APPOINTMENTS ====="
+                    )
+
+                    for appointment in appointments:
+
+                        print(
+                            appointment.appointment_id,
+                            "|",
+                            appointment.appointment_date,
+                            "|",
+                            appointment.doctor_id,
+                            "|",
+                            appointment.appointment_status
+                        )
+                elif choice == "3":
+
+                    appointments = (
+                        AppointmentService.search_appointments_by_doctor(
+                            InputHelper.get_input(
+                                "ENTER DOCTOR ID: "
+                            ).strip().upper()
+                        )
+                    )
+
+                    if not appointments:
+
+                        print(
+                            "NO APPOINTMENTS FOUND"
+                        )
+
+                        continue
+
+                    print(
+                        "\n===== APPOINTMENTS ====="
+                    )
+
+                    for appointment in appointments:
+
+                        print(
+                            appointment.appointment_id,
+                            "|",
+                            appointment.appointment_date,
+                            "|",
+                            appointment.patient_id,
+                            "|",
+                            appointment.appointment_status
+                        )
+
+                elif choice == "4":
+
+                    return
+
+                else:
+
+                    print(
+                        "INVALID CHOICE"
+                    )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+            except Exception as e:
 
                 print(
-                    "TOKEN TIME :",
-                    token_start,
-                    "TO",
-                    token_end
-                )
-
-                print(
-                    "STATUS :",
-                    appointment.appointment_status
-                )
-
-                print(
-                    "REASON :",
-                    appointment.reason_for_visit
-                )
-
-            else:
-                print("APPOINTMENT NOT FOUND")
-        except OperationCancelled as e:
-
-            print(e)
-
-            return
-        except Exception as e:
-            print("MESSAGE:", e)
+                    "ERROR:",e)
 
     @staticmethod
     def update_appointment():
@@ -390,7 +440,7 @@ class AppointmentMenu:
             ).strip().upper()
 
             appointment = (
-                AppointmentService.search_appointment(
+                AppointmentService.search_appointment_by_id(
                     appointment_id
                 )
             )
@@ -399,11 +449,11 @@ class AppointmentMenu:
                 print("APPOINTMENT NOT FOUND")
                 return
 
-            patient = PatientService.search_patient(
+            patient = PatientService.search_patient_by_id(
                 appointment.patient_id
             )
 
-            doctor = DoctorService.search_doctor(
+            doctor = DoctorService.search_doctor_by_id(
                 appointment.doctor_id
             )
 
@@ -496,12 +546,9 @@ class AppointmentMenu:
 
             elif date_option == "4":
 
-                appointment_date = datetime.strptime(
-                    InputHelper.get_input(
-                        "ENTER APPOINTMENT DATE (YYYY-MM-DD): "
-                    ),
-                    "%Y-%m-%d"
-                ).date()
+                appointment_date = InputHelper.get_date(
+                    "ENTER APPOINTMENT DATE (YYYY-MM-DD): "
+                )
 
             else:
 
@@ -591,21 +638,19 @@ class AppointmentMenu:
                         f"TOKEN {token} - AVAILABLE"
                     )
 
-            token_no = int(
-                InputHelper.get_update_input(
-                    "ENTER TOKEN NO",
-                    appointment.token_no
-                )
-            )       
+            token_no = InputHelper.get_update_integer(
+                "ENTER TOKEN NO",
+                appointment.token_no
+            )    
 
             reason_for_visit = InputHelper.get_update_input(
                 "ENTER REASON FOR VISIT",
                 appointment.reason_for_visit
             )
 
-            confirm = InputHelper.get_input(
+            confirm = InputHelper.get_confirmation(
                 "\nCONFIRM UPDATE (Y/N): "
-            ).strip().upper()
+            )
 
 
             if confirm != "Y":
@@ -649,7 +694,7 @@ class AppointmentMenu:
             ).strip().upper()
 
             appointment = (
-                AppointmentService.search_appointment(
+                AppointmentService.search_appointment_by_id(
                     appointment_id
                 )
             )
@@ -662,11 +707,11 @@ class AppointmentMenu:
 
                 return
 
-            patient = PatientService.search_patient(
+            patient = PatientService.search_patient_by_id(
                 appointment.patient_id
             )
 
-            doctor = DoctorService.search_doctor(
+            doctor = DoctorService.search_doctor_by_id(
                 appointment.doctor_id
             )
 
@@ -711,9 +756,9 @@ class AppointmentMenu:
 
                 return
 
-            confirm = InputHelper.get_input(
-                "\nCONFIRM CANCELLATION (Y/N): "
-            ).strip().upper()
+            confirm = InputHelper.get_confirmation(
+                "\nCONFIRM APPOINTMENT CANCELLATION (Y/N): "
+            )
 
             if confirm != "Y":
 
@@ -793,7 +838,17 @@ class AppointmentMenu:
             print("5. VIEW ALL APPOINTMENTS")
             print("6. BACK")
 
-            choice = input("ENTER CHOICE: ")
+            try:
+
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+                break
 
             if choice == "1":
                 AppointmentMenu.book_appointment()
@@ -812,3 +867,8 @@ class AppointmentMenu:
 
             elif choice == "6":
                 break
+            else:
+
+                print(
+                    "INVALID CHOICE"
+                )

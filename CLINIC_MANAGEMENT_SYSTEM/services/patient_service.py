@@ -110,6 +110,46 @@ class PatientService:
             session.close()
             
     @staticmethod
+    def search_patient_by_id(
+        patient_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            patient = session.execute(
+                select(PatientMaster).where(
+                    PatientMaster.patient_id == patient_id
+                )
+            ).scalar_one_or_none()
+
+            return patient
+
+        finally:
+            session.close()
+        
+    @staticmethod
+    def search_patient_by_phone(
+        phone
+    ):
+
+        session = get_session()
+        
+        try:
+
+            patient = session.execute(
+                select(PatientMaster).where(
+                    PatientMaster.phone == phone
+                )
+            ).scalar_one_or_none()
+
+            return patient
+
+        finally:
+            session.close()
+                           
+    @staticmethod
     def view_all_patients():
 
         session = get_session()

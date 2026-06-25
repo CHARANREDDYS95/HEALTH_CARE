@@ -6,80 +6,115 @@ class BillingMenu:
     @staticmethod
     def search_bill():
 
-        try:
+        while True:
+
             print(
-                "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
+                "\n===== SEARCH BILL ====="
             )
 
-            bill_id = InputHelper.get_input(
-                "ENTER BILL ID: "
-            ).strip().upper()
+            print("1. SEARCH BY BILL ID")
+            print("2. SEARCH BY CONSULTATION ID")
+            print("3. BACK")
 
-            bill = (
-                BillingService.search_bill(
-                    bill_id
+            
+
+            try:
+                
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
                 )
-            )
 
-            if not bill:
+                if choice == "1":
+
+                    bill = (
+                        BillingService.search_bill_by_id(
+                            InputHelper.get_input(
+                                "ENTER BILL ID: "
+                            ).strip().upper()
+                        )
+                    )
+
+                elif choice == "2":
+
+                    bill = (
+                        BillingService.search_bill_by_consultation(
+                            InputHelper.get_input(
+                                "ENTER CONSULTATION ID: "
+                            ).strip().upper()
+                        )
+                    )
+
+                elif choice == "3":
+                    
+                    return
+
+                else:
+
+                    print(
+                        "INVALID CHOICE"
+                    )
+
+                    continue
+
+                if not bill:
+
+                    print(
+                        "BILL NOT FOUND"
+                    )
+
+                    continue
 
                 print(
-                    "BILL NOT FOUND"
+                    "\n===== BILL DETAILS ====="
                 )
 
-                return
+                print(
+                    "BILL ID :",
+                    bill.bill_id
+                )
 
-            print(
-                "\n===== BILL DETAILS ====="
-            )
+                print(
+                    "CONSULTATION ID :",
+                    bill.consultation_id
+                )
 
-            print(
-                "BILL ID :",
-                bill.bill_id
-            )
+                print(
+                    "CONSULTATION FEE :",
+                    bill.consultation_fee
+                )
 
-            print(
-                "CONSULTATION ID :",
-                bill.consultation_id
-            )
+                print(
+                    "DISCOUNT :",
+                    bill.discount_amount
+                )
 
-            print(
-                "CONSULTATION FEE :",
-                bill.consultation_fee
-            )
+                print(
+                    "TAX :",
+                    bill.tax_amount
+                )
 
-            print(
-                "DISCOUNT :",
-                bill.discount_amount
-            )
+                print(
+                    "TOTAL AMOUNT :",
+                    bill.total_amount
+                )
 
-            print(
-                "TAX :",
-                bill.tax_amount
-            )
+                print(
+                    "BILL DATE :",
+                    bill.bill_date
+                )
 
-            print(
-                "TOTAL AMOUNT :",
-                bill.total_amount
-            )
+                print(
+                    "STATUS :",
+                    bill.bill_status
+                )
 
-            print(
-                "BILL DATE :",
-                bill.bill_date
-            )
+            except OperationCancelled as e:
 
-            print(
-                "STATUS :",
-                bill.bill_status
-            )
-            
-        except OperationCancelled as e:
+                print(e)
 
-            print(e)
+            except Exception as e:
 
-            return
-        except Exception as e:
-            print("ERROR:", e)
+                print("ERROR:",e)
             
     @staticmethod
     def view_all_bills():
@@ -129,16 +164,12 @@ class BillingMenu:
                 "ENTER CONSULTATION ID: "
             ).strip().upper()
 
-            discount_amount = float(
-                InputHelper.get_input(
-                    "ENTER DISCOUNT AMOUNT: "
-                )
+            discount_amount = InputHelper.get_float(
+                "ENTER DISCOUNT AMOUNT: "
             )
 
-            tax_amount = float(
-                InputHelper.get_input(
-                    "ENTER TAX AMOUNT: "
-                )
+            tax_amount = InputHelper.get_float(
+                "ENTER TAX AMOUNT: "
             )
 
             bill_id = (
@@ -170,9 +201,34 @@ class BillingMenu:
             bill_id = InputHelper.get_input(
                 "ENTER BILL ID: "
             ).strip().upper()
+            
+            payment_mode = InputHelper.get_choice(
+                "ENTER PAYMENT MODE (CASH/UPI/CARD): ",
+                ["CASH", "UPI", "CARD"]
+            )
 
+            transaction_reference = None
+
+            if payment_mode != "CASH":
+
+                transaction_reference = InputHelper.get_input(
+                    "ENTER TRANSACTION REFERENCE: "
+                )
+            confirm = InputHelper.get_confirmation(
+                "CONFIRM PAYMENT (Y/N): "
+            )
+
+            if confirm == "N":
+
+                print(
+                    "PAYMENT CANCELLED"
+                )
+
+                return
             BillingService.process_payment(
-                bill_id
+                bill_id,
+                payment_mode,
+                transaction_reference
             )
 
             print(
@@ -200,7 +256,17 @@ class BillingMenu:
             print("4. VIEW ALL BILLS")
             print("5. BACK")
 
-            choice = input("ENTER CHOICE: ")
+            try:
+
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+                
+                break
 
             if choice == "1":
                 BillingMenu.generate_bill()

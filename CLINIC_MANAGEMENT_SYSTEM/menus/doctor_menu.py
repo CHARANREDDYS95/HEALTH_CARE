@@ -1,4 +1,3 @@
-from datetime import datetime
 from services.doctor_service import DoctorService
 from utils.input_helper import (InputHelper,OperationCancelled)
 
@@ -17,16 +16,14 @@ class DoctorMenu:
                 "ENTER DOCTOR NAME: "
             )
 
-            gender = InputHelper.get_input(
-                "ENTER GENDER (M/F/O): "
-            ).strip().upper()
+            gender = InputHelper.get_choice(
+                "ENTER GENDER (M/F/O): ",
+                ["M", "F", "O"]
+            )
 
-            dob = datetime.strptime(
-                InputHelper.get_input(
-                    "ENTER DOB (YYYY-MM-DD): "
-                ),
-                "%Y-%m-%d"
-            ).date()
+            dob = InputHelper.get_date(
+                "ENTER DOB (YYYY-MM-DD): "
+            )
 
             specialization = InputHelper.get_input(
                 "ENTER SPECIALIZATION: "
@@ -40,10 +37,8 @@ class DoctorMenu:
                 "ENTER LICENSE NUMBER: "
             )
 
-            experience_years = int(
-                InputHelper.get_input(
-                    "ENTER EXPERIENCE YEARS: "
-                )
+            experience_years = InputHelper.get_integer(
+                "ENTER EXPERIENCE YEARS: "
             )
 
             phone = InputHelper.get_input(
@@ -58,28 +53,18 @@ class DoctorMenu:
                 "ENTER ADDRESS: "
             )
 
-            consultation_fee = float(
-                InputHelper.get_input(
-                    "ENTER CONSULTATION FEE: "
-                )
+            consultation_fee = InputHelper.get_float(
+                "ENTER CONSULTATION FEE: "
             )
 
-            consultation_duration = int(
-                InputHelper.get_input(
-                    "ENTER CONSULTATION DURATION: "
-                )
+            doctor_status = InputHelper.get_choice(
+                "ENTER STATUS (ACTIVE/INACTIVE): ",
+                ["ACTIVE", "INACTIVE"]
             )
 
-            doctor_status = InputHelper.get_input(
-                "ENTER STATUS (ACTIVE/INACTIVE): "
-            ).strip().upper()
-
-            joining_date = datetime.strptime(
-                InputHelper.get_input(
-                    "ENTER JOINING DATE (YYYY-MM-DD): "
-                ),
-                "%Y-%m-%d"
-            ).date()
+            joining_date = InputHelper.get_date(
+                "ENTER JOINING DATE (YYYY-MM-DD): "
+            )
 
             doctor_id = DoctorService.add_doctor(
                 doctor_name,
@@ -93,7 +78,6 @@ class DoctorMenu:
                 email,
                 address,
                 consultation_fee,
-                consultation_duration,
                 doctor_status,
                 joining_date
             )
@@ -114,42 +98,128 @@ class DoctorMenu:
     @staticmethod
     def search_doctor():
 
-        try:
-            
+        while True:
+
             print(
-                "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
+                "\n===== SEARCH DOCTOR ====="
             )
 
-            doctor_id = InputHelper.get_input(
-                "ENTER DOCTOR ID: "
-            ).strip().upper()
+            print("1. SEARCH BY DOCTOR ID")
+            print("2. SEARCH BY PHONE NUMBER")
+            print("3. SEARCH BY LICENSE NUMBER")
+            print("4. BACK")
 
-            doctor = DoctorService.search_doctor(
-                doctor_id
-            )
+            
 
-            if doctor:
+            try:
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
 
-                print("\n===== DOCTOR DETAILS =====")
-                print("DOCTOR ID :", doctor.doctor_id)
-                print("DOCTOR NAME :", doctor.doctor_name)
-                print("GENDER :", doctor.gender)
-                print("PHONE :", doctor.phone)
-                print("EMAIL :", doctor.email)
-                print("SPECIALIZATION :", doctor.specialization)
-                print("STATUS :", doctor.doctor_status)
+                if choice == "1":
 
-            else:
-                print("DOCTOR NOT FOUND")
-        
-        except OperationCancelled as e:
+                    doctor = (
+                        DoctorService.search_doctor_by_id(
+                            InputHelper.get_input(
+                                "ENTER DOCTOR ID: "
+                            ).strip().upper()
+                        )
+                    )
 
-            print(e)
+                elif choice == "2":
 
-            return
-        
-        except Exception as e:
-            print("ERROR:", e)
+                    doctor = (
+                        DoctorService.search_doctor_by_phone(
+                            InputHelper.get_input(
+                                "ENTER PHONE NUMBER: "
+                            )
+                        )
+                    )
+
+                elif choice == "3":
+
+                    doctor = (
+                        DoctorService.search_doctor_by_license(
+                            InputHelper.get_input(
+                                "ENTER LICENSE NUMBER: "
+                            ).strip().upper()
+                        )
+                    )
+
+                elif choice == "4":
+
+                    return
+
+                else:
+
+                    print(
+                        "INVALID CHOICE"
+                    )
+
+                    continue
+
+                if not doctor:
+
+                    print(
+                        "DOCTOR NOT FOUND"
+                    )
+
+                    continue
+
+                print(
+                    "\n===== DOCTOR DETAILS ====="
+                )
+
+                print(
+                    "DOCTOR ID :",
+                    doctor.doctor_id
+                )
+
+                print(
+                    "DOCTOR NAME :",
+                    doctor.doctor_name
+                )
+
+                print(
+                    "GENDER :",
+                    doctor.gender
+                )
+
+                print(
+                    "PHONE :",
+                    doctor.phone
+                )
+
+                print(
+                    "EMAIL :",
+                    doctor.email
+                )
+
+                print(
+                    "SPECIALIZATION :",
+                    doctor.specialization
+                )
+
+                print(
+                    "LICENSE NUMBER :",
+                    doctor.license_no
+                )
+
+                print(
+                    "STATUS :",
+                    doctor.doctor_status
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+            except Exception as e:
+
+                print(
+                    "ERROR:",
+                    e
+                )
             
     @staticmethod
     def view_all_doctors():
@@ -190,7 +260,7 @@ class DoctorMenu:
                 "ENTER DOCTOR ID: "
             ).strip().upper()
 
-            doctor = DoctorService.search_doctor(
+            doctor = DoctorService.search_doctor_by_id(
                 doctor_id
             )
 
@@ -218,24 +288,21 @@ class DoctorMenu:
                 doctor.address
             )
 
-            consultation_fee = float(
-                InputHelper.get_update_input(
-                    "ENTER CONSULTATION FEE",
-                    doctor.consultation_fee
-                )
+            consultation_fee = InputHelper.get_update_float(
+                "ENTER CONSULTATION FEE",
+                doctor.consultation_fee
             )
 
-            consultation_duration = int(
-                InputHelper.get_update_input(
-                    "ENTER CONSULTATION DURATION",
-                    doctor.consultation_duration
-                )
+            consultation_duration = InputHelper.get_update_integer(
+                "ENTER CONSULTATION DURATION",
+                doctor.consultation_duration
             )
 
-            doctor_status = InputHelper.get_update_input(
+            doctor_status = InputHelper.get_update_choice(
                 "ENTER STATUS",
-                doctor.doctor_status
-            ).upper()
+                doctor.doctor_status,
+                ["ACTIVE", "INACTIVE"]
+            )
 
             DoctorService.update_doctor(
                 doctor_id,
@@ -263,10 +330,22 @@ class DoctorMenu:
     def delete_doctor():
 
         try:
+            
+            print("\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION")
 
             doctor_id = InputHelper.get_input(
                 "ENTER DOCTOR ID: "
             ).strip().upper()
+
+            confirm = InputHelper.get_confirmation()
+
+            if confirm == "N":
+
+                print(
+                    "DELETE OPERATION CANCELLED"
+                )
+
+                return
 
             DoctorService.delete_doctor(
                 doctor_id
@@ -298,14 +377,24 @@ class DoctorMenu:
             print("5. DELETE DOCTOR")
             print("6. BACK")
 
-            choice = input("ENTER CHOICE: ")
+            try:
+
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+                break
 
             if choice == "1":
                 DoctorMenu.add_doctor()
 
             elif choice == "2":
                 DoctorMenu.search_doctor()
-                
+
             elif choice == "3":
                 DoctorMenu.view_all_doctors()
 

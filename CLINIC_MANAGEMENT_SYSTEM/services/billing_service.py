@@ -254,8 +254,50 @@ class BillingService:
             session.close()
             
     @staticmethod
-    def process_payment(
+    def search_bill_by_id(
         bill_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            bill = session.execute(
+                select(BillingMaster).where(
+                    BillingMaster.bill_id == bill_id
+                )
+            ).scalar_one_or_none()
+
+            return bill
+
+        finally:
+            session.close()
+        
+    @staticmethod
+    def search_bill_by_consultation(
+        consultation_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            bill = session.execute(
+                select(BillingMaster).where(
+                    BillingMaster.consultation_id == consultation_id
+                )
+            ).scalar_one_or_none()
+
+            return bill
+
+        finally:
+            session.close()
+            
+    @staticmethod
+    def process_payment(
+        bill_id,
+        payment_mode,
+        transaction_reference
     ):
 
         session = get_session()
@@ -277,15 +319,34 @@ class BillingService:
                 )
 
             if bill.bill_status == "PAID":
+
                 raise ValueError(
                     "BILL ALREADY PAID"
                 )
+
+            payment_id = generate_id(
+                "PAYMENT_MASTER",
+                "PAYMENT_ID",
+                "PM"
+            )
+
+            payment = PaymentMaster(
+                payment_id=payment_id,
+                bill_id=bill.bill_id,
+                payment_date=date.today(),
+                payment_mode=payment_mode,
+                paid_amount=bill.total_amount,
+                transaction_reference=transaction_reference,
+                payment_status="SUCCESS"
+            )
+
+            session.add(payment)
 
             bill.bill_status = "PAID"
 
             session.commit()
 
-            return True
+            return payment_id
 
         except Exception:
             session.rollback()

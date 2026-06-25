@@ -1,5 +1,4 @@
 from services.consultation_service import ConsultationService
-from datetime import datetime
 from utils.input_helper import (InputHelper,OperationCancelled)
 
 class ConsultationMenu:
@@ -89,30 +88,16 @@ class ConsultationMenu:
                 "ENTER NOTES: "
                 )
             
-            followup_required = InputHelper.get_input(
+            followup_required = InputHelper.get_yes_no(
                 "FOLLOW-UP REQUIRED (YES/NO): "
-            ).strip().upper()
-
-            if followup_required not in [
-                "YES",
-                "NO"
-            ]:
-
-                print(
-                    "ENTER YES OR NO ONLY"
-                )
-
-                return
+            )
 
             followup_date = None
 
             if followup_required == "YES":
 
-                followup_date = datetime.strptime(
-                    InputHelper.get_input(
-                        "ENTER FOLLOW-UP DATE (YYYY-MM-DD): "
-                    ),
-                    "%Y-%m-%d"
+                followup_date = InputHelper.get_date(
+                    "ENTER FOLLOW-UP DATE (YYYY-MM-DD): "
                 )
 
             ConsultationService.end_consultation(
@@ -139,80 +124,113 @@ class ConsultationMenu:
     @staticmethod
     def search_consultation():
 
-        try:
-            
+        while True:
+
             print(
-                "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
+                "\n===== SEARCH CONSULTATION ====="
             )
 
-            consultation_id = InputHelper.get_input(
-                "ENTER CONSULTATION ID: "
-            ).strip().upper()
+            print("1. SEARCH BY CONSULTATION ID")
+            print("2. SEARCH BY APPOINTMENT ID")
+            print("3. BACK")
 
-            consultation = (
-                ConsultationService.search_consultation(
-                    consultation_id
+            try:
+                
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
                 )
-            )
 
-            if not consultation:
+                if choice == "1":
+
+                    consultation = (
+                        ConsultationService.search_consultation_by_id(
+                            InputHelper.get_input(
+                                "ENTER CONSULTATION ID: "
+                            ).strip().upper()
+                        )
+                    )
+
+                elif choice == "2":
+
+                    consultation = (
+                        ConsultationService.search_consultation_by_appointment(
+                            InputHelper.get_input(
+                                "ENTER APPOINTMENT ID: "
+                            ).strip().upper()
+                        )
+                    )
+
+                elif choice == "3":
+
+                    return
+
+                else:
+
+                    print(
+                        "INVALID CHOICE"
+                    )
+
+                    continue
+
+                if not consultation:
+
+                    print(
+                        "CONSULTATION NOT FOUND"
+                    )
+
+                    continue
 
                 print(
-                    "CONSULTATION NOT FOUND"
+                    "\n===== CONSULTATION DETAILS ====="
                 )
 
-                return
+                print(
+                    "CONSULTATION ID :",
+                    consultation.consultation_id
+                )
 
-            print(
-                "\n===== CONSULTATION DETAILS ====="
-            )
+                print(
+                    "APPOINTMENT ID :",
+                    consultation.appointment_id
+                )
 
-            print(
-                "CONSULTATION ID :",
-                consultation.consultation_id
-            )
+                print(
+                    "SYMPTOMS :",
+                    consultation.symptoms
+                )
 
-            print(
-                "APPOINTMENT ID :",
-                consultation.appointment_id
-            )
+                print(
+                    "DIAGNOSIS :",
+                    consultation.diagnosis
+                )
 
-            print(
-                "SYMPTOMS :",
-                consultation.symptoms
-            )
+                print(
+                    "PRESCRIPTION :",
+                    consultation.prescription
+                )
 
-            print(
-                "DIAGNOSIS :",
-                consultation.diagnosis
-            )
+                print(
+                    "FOLLOW-UP REQUIRED :",
+                    consultation.followup_required
+                )
 
-            print(
-                "PRESCRIPTION :",
-                consultation.prescription
-            )
+                print(
+                    "FOLLOW-UP DATE :",
+                    consultation.followup_date
+                )
 
-            print(
-                "FOLLOW-UP REQUIRED :",
-                consultation.followup_required
-            )
+                print(
+                    "STATUS :",
+                    consultation.consultation_status
+                )
 
-            print(
-                "FOLLOW-UP DATE :",
-                consultation.followup_date
-            )
+            except OperationCancelled as e:
 
-            print(
-                "STATUS :",
-                consultation.consultation_status
-            )
-        except OperationCancelled as e:
+                print(e)
 
-            print(e)
+            except Exception as e:
 
-            return
-        except Exception as e:
-            print("ERROR:", e)
+                print("ERROR:",e)
         
     @staticmethod
     def view_all_consultations():
@@ -265,7 +283,17 @@ class ConsultationMenu:
             print("5. VIEW ALL CONSULTATIONS")
             print("6. BACK")
 
-            choice = input("ENTER CHOICE: ")
+            try:
+
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+                break
 
             if choice == "1":
                 ConsultationMenu.check_in_patient()

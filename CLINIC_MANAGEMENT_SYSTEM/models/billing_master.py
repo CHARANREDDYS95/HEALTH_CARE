@@ -49,7 +49,3 @@ class BillingMaster(Base):
         String(20)
     )
     
-    payment_status = Column(
-        "PAYMENT_STATUS",
-        String(20)
-    )

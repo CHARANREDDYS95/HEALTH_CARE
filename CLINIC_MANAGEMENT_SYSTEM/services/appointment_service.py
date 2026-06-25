@@ -128,6 +128,70 @@ class AppointmentService:
 
         finally:
             session.close()
+            
+    @staticmethod
+    def search_appointment_by_id(
+        appointment_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            appointment = session.execute(
+                select(AppointmentMaster).where(
+                    AppointmentMaster.appointment_id == appointment_id
+                )
+            ).scalar_one_or_none()
+
+            return appointment
+
+        finally:
+            session.close()
+        
+    @staticmethod
+    def search_appointments_by_patient(
+        patient_id
+        ):
+
+        session = get_session()
+
+        try:
+
+            appointments = session.execute(
+                select(AppointmentMaster).where(
+                    AppointmentMaster.patient_id == patient_id
+                ).order_by(
+                    AppointmentMaster.appointment_date
+                )
+            ).scalars().all()
+
+            return appointments
+
+        finally:
+            session.close()
+        
+    @staticmethod
+    def search_appointments_by_doctor(
+        doctor_id
+        ):
+
+        session = get_session()
+
+        try:
+
+            appointments = session.execute(
+                select(AppointmentMaster).where(
+                    AppointmentMaster.doctor_id == doctor_id
+                ).order_by(
+                    AppointmentMaster.appointment_date
+                )
+            ).scalars().all()
+
+            return appointments
+
+        finally:
+            session.close()
 
     @staticmethod
     def update_appointment(

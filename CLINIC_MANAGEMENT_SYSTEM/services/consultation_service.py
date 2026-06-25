@@ -120,6 +120,46 @@ class ConsultationService:
 
         finally:
             session.close()
+            
+    @staticmethod
+    def search_consultation_by_id(
+        consultation_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            consultation = session.execute(
+                select(ConsultationMaster).where(
+                    ConsultationMaster.consultation_id == consultation_id
+                )
+            ).scalar_one_or_none()
+
+            return consultation
+
+        finally:
+            session.close()
+        
+    @staticmethod
+    def search_consultation_by_appointment(
+        appointment_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            consultation = session.execute(
+                select(ConsultationMaster).where(
+                    ConsultationMaster.appointment_id == appointment_id
+                )
+            ).scalar_one_or_none()
+
+            return consultation
+
+        finally:
+            session.close() 
     
     @staticmethod
     def get_all_consultations():

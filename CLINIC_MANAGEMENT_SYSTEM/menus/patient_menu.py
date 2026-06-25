@@ -1,4 +1,3 @@
-from datetime import datetime
 from services.patient_service import PatientService
 from utils.input_helper import (InputHelper,OperationCancelled)
 
@@ -18,16 +17,14 @@ class PatientMenu:
                 "ENTER PATIENT NAME: "
             )
 
-            gender = InputHelper.get_input(
-                "ENTER GENDER (M/F/O): "
-            ).strip().upper()
+            gender = InputHelper.get_choice(
+                "ENTER GENDER (M/F/O): ",
+                ["M", "F", "O"]
+            )
 
-            dob = datetime.strptime(
-                InputHelper.get_input(
-                    "ENTER DOB (YYYY-MM-DD): "
-                ),
-                "%Y-%m-%d"
-            ).date()
+            dob = InputHelper.get_date(
+                "ENTER DOB (YYYY-MM-DD): "
+            )
 
             phone = InputHelper.get_input(
                 "ENTER PHONE NUMBER: "
@@ -65,16 +62,14 @@ class PatientMenu:
                 "ENTER EMERGENCY PHONE: "
             )
 
-            registration_date = datetime.strptime(
-                InputHelper.get_input(
-                    "ENTER REGISTRATION DATE (YYYY-MM-DD): "
-                ),
-                "%Y-%m-%d"
-            ).date()
+            registration_date = InputHelper.get_date(
+                "ENTER REGISTRATION DATE (YYYY-MM-DD): "
+            )
 
-            patient_status = InputHelper.get_input(
-                "ENTER STATUS (ACTIVE/INACTIVE): "
-            ).strip().upper()
+            patient_status = InputHelper.get_choice(
+                "ENTER STATUS (ACTIVE/INACTIVE): ",
+                ["ACTIVE", "INACTIVE"]
+            )
 
             patient_id = PatientService.register_patient(
                 patient_name,
@@ -108,41 +103,113 @@ class PatientMenu:
     @staticmethod
     def search_patient():
 
-        try:
-            
+        while True:
+
             print(
-                "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
+                "\n===== SEARCH PATIENT ====="
             )
 
-            search_value = InputHelper.get_input(
-                "ENTER PATIENT ID OR PHONE NUMBER: "
-            ).strip().upper()
+            print("1. SEARCH BY PATIENT ID")
+            print("2. SEARCH BY PHONE NUMBER")
+            print("3. BACK")
 
-            patient = PatientService.search_patient(
-                search_value
-            )
+            
 
-            if patient:
+            try:
+                
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
 
-                print("\n===== PATIENT DETAILS =====")
-                print("PATIENT ID :", patient.patient_id)
-                print("PATIENT NAME :", patient.patient_name)
-                print("GENDER :", patient.gender)
-                print("PHONE :", patient.phone)
-                print("CITY :", patient.city)
-                print("BLOOD GROUP :", patient.blood_group)
-                print("STATUS :", patient.patient_status)
+                if choice == "1":
 
-            else:
-                print("PATIENT NOT FOUND")
-        
-        except OperationCancelled as e:
+                    patient = (
+                        PatientService.search_patient_by_id(
+                            InputHelper.get_input(
+                                "ENTER PATIENT ID: "
+                            ).strip().upper()
+                        )
+                    )
 
-            print(e)
+                elif choice == "2":
 
-            return
-        except Exception as e:
-            print("ERROR:", e)
+                    patient = (
+                        PatientService.search_patient_by_phone(
+                            InputHelper.get_input(
+                                "ENTER PHONE NUMBER: "
+                            )
+                        )
+                    )
+
+                elif choice == "3":
+
+                    return
+
+                else:
+
+                    print(
+                        "INVALID CHOICE"
+                    )
+
+                    continue
+
+                if not patient:
+
+                    print(
+                        "PATIENT NOT FOUND"
+                    )
+
+                    continue
+
+                print(
+                    "\n===== PATIENT DETAILS ====="
+                )
+
+                print(
+                    "PATIENT ID :",
+                    patient.patient_id
+                )
+
+                print(
+                    "PATIENT NAME :",
+                    patient.patient_name
+                )
+
+                print(
+                    "GENDER :",
+                    patient.gender
+                )
+
+                print(
+                    "PHONE :",
+                    patient.phone
+                )
+
+                print(
+                    "CITY :",
+                    patient.city
+                )
+
+                print(
+                    "BLOOD GROUP :",
+                    patient.blood_group
+                )
+
+                print(
+                    "STATUS :",
+                    patient.patient_status
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+            except Exception as e:
+
+                print(
+                    "ERROR:",
+                    e
+                )
             
     @staticmethod
     def view_all_patients():
@@ -183,7 +250,7 @@ class PatientMenu:
                 "ENTER PATIENT ID: "
             ).strip().upper()
 
-            patient = PatientService.search_patient(
+            patient = PatientService.search_patient_by_id(
                 patient_id
             )
 
@@ -236,10 +303,11 @@ class PatientMenu:
                 patient.emergency_phone
             )
 
-            patient_status = InputHelper.get_update_input(
+            patient_status = InputHelper.get_update_choice(
                 "ENTER STATUS",
-                patient.patient_status
-            ).upper()
+                patient.patient_status,
+                ["ACTIVE", "INACTIVE"]
+            )
 
             PatientService.update_patient(
                 patient_id,
@@ -275,6 +343,19 @@ class PatientMenu:
                 "ENTER PATIENT ID: "
             ).strip().upper()
 
+            
+            
+            confirm = InputHelper.get_confirmation(
+                "CONFIRM PATIENT DEACTIVATION (Y/N): "
+            )
+
+            if confirm == "N":
+
+                print(
+                    "DELETE OPERATION CANCELLED"
+                )
+
+                return
             PatientService.delete_patient(
                 patient_id
             )
@@ -303,7 +384,17 @@ class PatientMenu:
             print("5. DELETE PATIENT")
             print("6. BACK")
 
-            choice = input("ENTER CHOICE: ")
+            try:
+
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
+
+            except OperationCancelled as e:
+
+                print(e)
+
+                break
 
             if choice == "1":
                 PatientMenu.register_patient()
