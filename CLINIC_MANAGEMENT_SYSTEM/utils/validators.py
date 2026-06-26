@@ -1,5 +1,5 @@
 import re
-from datetime import date
+from datetime import date, datetime
 
 
 def validate_required(value, field_name):
@@ -54,3 +54,60 @@ def validate_blood_group(blood_group):
 
     if blood_group and blood_group.upper() not in valid_groups:
         raise ValueError("Invalid blood group")
+def validate_time(value):
+
+    try:
+
+        datetime.strptime(
+            value,
+            "%H:%M"
+        )
+
+    except ValueError:
+
+        raise ValueError(
+            "Time must be in HH:MM (24-hour) format"
+        )
+
+def validate_future_date(
+    appointment_date
+):
+
+    if appointment_date < date.today():
+
+        raise ValueError(
+            "APPOINTMENT DATE CANNOT BE IN THE PAST"
+        )
+        
+def validate_room(room):
+
+    valid_rooms = [
+        "CR1",
+        "CR2"
+    ]
+
+    if room not in valid_rooms:
+
+        raise ValueError(
+            "Room must be CR1 or CR2"
+        )
+
+def validate_day(
+    day
+):
+
+    valid_days = [
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY",
+        "SUNDAY"
+    ]
+
+    if day not in valid_days:
+
+        raise ValueError(
+            "INVALID DAY"
+        )

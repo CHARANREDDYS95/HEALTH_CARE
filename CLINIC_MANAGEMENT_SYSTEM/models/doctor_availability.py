@@ -10,4 +10,8 @@ class DoctorAvailability(Base):
     session_id = Column("SESSION_ID", String(10), nullable=False)
     available_day = Column("AVAILABLE_DAY", String(20), nullable=False)
     max_patients = Column("MAX_PATIENTS", Integer)
-    status = Column("STATUS", String(20))
+    status = Column(
+        "STATUS",
+        String(10),
+        nullable=False
+    )

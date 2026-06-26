@@ -1,5 +1,12 @@
 from services.patient_service import PatientService
-from utils.input_helper import (InputHelper,OperationCancelled)
+from utils.input_helper import (
+    InputHelper,
+    OperationCancelled
+)
+
+from utils.display_constants import (
+    TABLE_LINE
+)
 
 
 class PatientMenu:
@@ -88,9 +95,16 @@ class PatientMenu:
                 patient_status
             )
 
+            print("\n==========================================")
+            print("    PATIENT REGISTERED SUCCESSFULLY")
+            print("==========================================")
+
             print(
-                f"PATIENT REGISTERED SUCCESSFULLY. ID: {patient_id}"
+                "PATIENT ID :",
+                patient_id
             )
+
+            print("==========================================")
         
         except OperationCancelled as e:
 
@@ -105,9 +119,9 @@ class PatientMenu:
 
         while True:
 
-            print(
-                "\n===== SEARCH PATIENT ====="
-            )
+            print("\n==========================================")
+            print("          SEARCH PATIENT")
+            print("==========================================")
 
             print("1. SEARCH BY PATIENT ID")
             print("2. SEARCH BY PHONE NUMBER")
@@ -155,50 +169,92 @@ class PatientMenu:
 
                 if not patient:
 
-                    print(
-                        "PATIENT NOT FOUND"
-                    )
+                    print("\n==========================================")
+                    print("        PATIENT NOT FOUND")
+                    print("==========================================")
 
                     continue
 
-                print(
-                    "\n===== PATIENT DETAILS ====="
-                )
+                print("\n==========================================")
+                print("          PATIENT DETAILS")
+                print("==========================================")
 
                 print(
-                    "PATIENT ID :",
+                    "PATIENT ID        :",
                     patient.patient_id
                 )
 
                 print(
-                    "PATIENT NAME :",
+                    "NAME              :",
                     patient.patient_name
                 )
 
                 print(
-                    "GENDER :",
+                    "GENDER            :",
                     patient.gender
                 )
 
                 print(
-                    "PHONE :",
+                    "DATE OF BIRTH     :",
+                    patient.dob
+                )
+
+                print(
+                    "PHONE             :",
                     patient.phone
                 )
 
                 print(
-                    "CITY :",
+                    "ADDRESS           :",
+                    patient.address
+                )
+
+                print(
+                    "CITY              :",
                     patient.city
                 )
 
                 print(
-                    "BLOOD GROUP :",
+                    "BLOOD GROUP       :",
                     patient.blood_group
                 )
 
                 print(
-                    "STATUS :",
+                    "OCCUPATION        :",
+                    patient.occupation
+                )
+
+                print(
+                    "MARITAL STATUS    :",
+                    patient.marital_status
+                )
+
+                print(
+                    "ALLERGIES         :",
+                    patient.allergies
+                )
+
+                print(
+                    "EMERGENCY CONTACT :",
+                    patient.emergency_contact_name
+                )
+
+                print(
+                    "EMERGENCY PHONE   :",
+                    patient.emergency_phone
+                )
+
+                print(
+                    "REGISTERED ON     :",
+                    patient.registration_date
+                )
+
+                print(
+                    "STATUS            :",
                     patient.patient_status
                 )
+
+                print("==========================================")
 
             except OperationCancelled as e:
 
@@ -219,23 +275,50 @@ class PatientMenu:
             patients = PatientService.view_all_patients()
 
             if not patients:
+
+                print("\n==========================================")
+                print("            PATIENT LIST")
+                print("==========================================")
                 print("NO PATIENTS FOUND")
+
                 return
 
-            print("\n===== PATIENT LIST =====")
-            
+            print("\n===============================================================================")
+            print("                               PATIENT LIST")
+            print("===============================================================================")
+
+            print(
+                f"{'ID':<8}"
+                f"{'NAME':<30}"
+                f"{'PHONE':<15}"
+                f"{'BLOOD GROUP':<15}"
+                f"{'STATUS':<10}"
+            )
+
+            print(TABLE_LINE)
+
             for patient in patients:
 
                 print(
-                    f"{patient.patient_id} | "
-                    f"{patient.patient_name} | "
-                    f"{patient.phone} | "
-                    f"{patient.blood_group} | "
-                    f"{patient.patient_status}"
+                    f"{patient.patient_id:<8}"
+                    f"{patient.patient_name:<30}"
+                    f"{patient.phone:<15}"
+                    f"{patient.blood_group:<15}"
+                    f"{patient.patient_status:<10}"
                 )
 
+            print(TABLE_LINE)
+
+            print(
+                f"TOTAL RECORDS : {len(patients)}"
+            )
+
         except Exception as e:
-            print("ERROR:", e)
+
+            print(
+                "ERROR:",
+                e
+            )
 
     @staticmethod
     def update_patient():
@@ -255,7 +338,9 @@ class PatientMenu:
             )
 
             if not patient:
-                print("PATIENT NOT FOUND")
+                print("\n==========================================")
+                print("        PATIENT NOT FOUND")
+                print("==========================================")
                 return
 
             patient_name = InputHelper.get_update_input(
@@ -323,7 +408,21 @@ class PatientMenu:
                 patient_status
             )
 
-            print("PATIENT UPDATED SUCCESSFULLY")
+            print("\n==========================================")
+            print("      PATIENT UPDATED SUCCESSFULLY")
+            print("==========================================")
+
+            print(
+                "PATIENT ID :",
+                patient_id
+            )
+
+            print(
+                "NAME       :",
+                patient_name
+            )
+
+            print("==========================================")
         except OperationCancelled as e:
 
             print(e)
@@ -360,9 +459,20 @@ class PatientMenu:
                 patient_id
             )
 
+            print("\n==========================================")
+            print("   PATIENT STATUS UPDATED SUCCESSFULLY")
+            print("==========================================")
+
             print(
-                "PATIENT STATUS CHANGED TO INACTIVE"
+                "PATIENT ID :",
+                patient_id
             )
+
+            print(
+                "NEW STATUS : INACTIVE"
+            )
+
+            print("==========================================")
         except OperationCancelled as e:
 
             print(e)
@@ -376,7 +486,9 @@ class PatientMenu:
 
         while True:
 
-            print("\n===== PATIENT MANAGEMENT =====")
+            print("\n==========================================")
+            print("         PATIENT MANAGEMENT")
+            print("==========================================")
             print("1. REGISTER PATIENT")
             print("2. SEARCH PATIENT")
             print("3. VIEW ALL PATIENTS")

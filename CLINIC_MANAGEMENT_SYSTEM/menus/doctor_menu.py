@@ -1,6 +1,9 @@
 from services.doctor_service import DoctorService
 from utils.input_helper import (InputHelper,OperationCancelled)
+from utils.display_constants import (
 
+    TABLE_LINE
+)
 class DoctorMenu:
 
     @staticmethod
@@ -81,10 +84,17 @@ class DoctorMenu:
                 doctor_status,
                 joining_date
             )
+            
+            print("\n==========================================")
+            print("      DOCTOR ADDED SUCCESSFULLY")
+            print("==========================================")
 
             print(
-                f"DOCTOR ADDED SUCCESSFULLY. ID: {doctor_id}"
+                "DOCTOR ID :",
+                doctor_id
             )
+
+            print("==========================================")
             
         except OperationCancelled as e:
 
@@ -100,9 +110,9 @@ class DoctorMenu:
 
         while True:
 
-            print(
-                "\n===== SEARCH DOCTOR ====="
-            )
+            print("\n==========================================")
+            print("           SEARCH DOCTOR")
+            print("==========================================")
 
             print("1. SEARCH BY DOCTOR ID")
             print("2. SEARCH BY PHONE NUMBER")
@@ -166,49 +176,81 @@ class DoctorMenu:
 
                     continue
 
-                print(
-                    "\n===== DOCTOR DETAILS ====="
-                )
+                print("\n==========================================")
+                print("           DOCTOR DETAILS")
+                print("==========================================")
 
                 print(
-                    "DOCTOR ID :",
+                    "DOCTOR ID       :",
                     doctor.doctor_id
                 )
 
                 print(
-                    "DOCTOR NAME :",
+                    "NAME            :",
                     doctor.doctor_name
                 )
 
                 print(
-                    "GENDER :",
+                    "GENDER          :",
                     doctor.gender
                 )
 
                 print(
-                    "PHONE :",
-                    doctor.phone
+                    "DATE OF BIRTH   :",
+                    doctor.dob
                 )
 
                 print(
-                    "EMAIL :",
-                    doctor.email
-                )
-
-                print(
-                    "SPECIALIZATION :",
+                    "SPECIALIZATION  :",
                     doctor.specialization
                 )
 
                 print(
-                    "LICENSE NUMBER :",
+                    "QUALIFICATION   :",
+                    doctor.qualification
+                )
+
+                print(
+                    "LICENSE NUMBER  :",
                     doctor.license_no
                 )
 
                 print(
-                    "STATUS :",
+                    "EXPERIENCE      :",
+                    f"{doctor.experience_years} Years"
+                )
+
+                print(
+                    "PHONE           :",
+                    doctor.phone
+                )
+
+                print(
+                    "EMAIL           :",
+                    doctor.email
+                )
+
+                print(
+                    "ADDRESS         :",
+                    doctor.address
+                )
+
+                print(
+                    "CONSULTATION FEE:",
+                    doctor.consultation_fee
+                )
+
+                print(
+                    "JOINING DATE    :",
+                    doctor.joining_date
+                )
+
+                print(
+                    "STATUS          :",
                     doctor.doctor_status
                 )
+
+                print("==========================================")
 
             except OperationCancelled as e:
 
@@ -229,23 +271,50 @@ class DoctorMenu:
             doctors = DoctorService.view_all_doctors()
 
             if not doctors:
+
+                print("\n==========================================")
+                print("            DOCTOR LIST")
+                print("==========================================")
                 print("NO DOCTORS FOUND")
+
                 return
 
-            print("\n===== DOCTOR LIST =====")
-            
+            print("\n===============================================================================")
+            print("                                DOCTOR LIST")
+            print("===============================================================================")
+
+            print(
+                f"{'ID':<8}"
+                f"{'NAME':<30}"
+                f"{'SPECIALIZATION':<25}"
+                f"{'PHONE':<15}"
+                f"{'STATUS':<10}"
+            )
+
+            print(TABLE_LINE)
+
             for doctor in doctors:
 
                 print(
-                    doctor.doctor_id,
-                    doctor.doctor_name,
-                    doctor.specialization,
-                    doctor.phone,
-                    doctor.doctor_status
+                    f"{doctor.doctor_id:<8}"
+                    f"{doctor.doctor_name:<30}"
+                    f"{doctor.specialization:<25}"
+                    f"{doctor.phone:<15}"
+                    f"{doctor.doctor_status:<10}"
                 )
 
+            print(TABLE_LINE)
+
+            print(
+                f"TOTAL RECORDS : {len(doctors)}"
+            )
+
         except Exception as e:
-            print("ERROR:", e)
+
+            print(
+                "ERROR:",
+                e
+            )
 
     @staticmethod
     def update_doctor():
@@ -265,7 +334,9 @@ class DoctorMenu:
             )
 
             if not doctor:
-                print("DOCTOR NOT FOUND")
+                print("\n==========================================")
+                print("        DOCTOR NOT FOUND")
+                print("==========================================")
                 return
 
             doctor_name = InputHelper.get_update_input(
@@ -293,29 +364,31 @@ class DoctorMenu:
                 doctor.consultation_fee
             )
 
-            consultation_duration = InputHelper.get_update_integer(
-                "ENTER CONSULTATION DURATION",
-                doctor.consultation_duration
-            )
-
-            doctor_status = InputHelper.get_update_choice(
-                "ENTER STATUS",
-                doctor.doctor_status,
-                ["ACTIVE", "INACTIVE"]
-            )
-
             DoctorService.update_doctor(
                 doctor_id,
                 doctor_name,
                 phone,
                 email,
                 address,
-                consultation_fee,
-                consultation_duration,
-                doctor_status
+                consultation_fee
+
             )
 
-            print("DOCTOR UPDATED SUCCESSFULLY")
+            print("\n==========================================")
+            print("     DOCTOR UPDATED SUCCESSFULLY")
+            print("==========================================")
+
+            print(
+                "DOCTOR ID :",
+                doctor_id
+            )
+
+            print(
+                "NAME      :",
+                doctor_name
+            )
+
+            print("==========================================")
         
         except OperationCancelled as e:
 
@@ -327,41 +400,81 @@ class DoctorMenu:
             print("ERROR:", e)
 
     @staticmethod
-    def delete_doctor():
+    def change_doctor_status():
 
         try:
-            
-            print("\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION")
+
+            print("\n==========================================")
+            print("        CHANGE DOCTOR STATUS")
+            print("==========================================")
+            print("Type 'cancel' at any time to stop the operation.\n")
 
             doctor_id = InputHelper.get_input(
                 "ENTER DOCTOR ID: "
             ).strip().upper()
 
-            confirm = InputHelper.get_confirmation()
-
-            if confirm == "N":
-
-                print(
-                    "DELETE OPERATION CANCELLED"
-                )
-
-                return
-
-            DoctorService.delete_doctor(
+            doctor = DoctorService.search_doctor_by_id(
                 doctor_id
             )
 
-            print(
-                "DOCTOR STATUS CHANGED TO INACTIVE"
+            if not doctor:
+
+                print("\n==========================================")
+                print("        DOCTOR NOT FOUND")
+                print("==========================================")
+                return
+
+            print("\n==========================================")
+            print("        CURRENT DOCTOR DETAILS")
+            print("==========================================")
+
+            print("DOCTOR ID      :", doctor.doctor_id)
+            print("DOCTOR NAME    :", doctor.doctor_name)
+            print("CURRENT STATUS :", doctor.doctor_status)
+            
+            print("\nSELECT NEW STATUS")
+
+            new_status = InputHelper.get_status_choice(
+                doctor.doctor_status
             )
-        
+
+            if new_status == doctor.doctor_status:
+
+                print(
+                    f"\nDOCTOR IS ALREADY {doctor.doctor_status}"
+                )
+                return
+
+            confirm = InputHelper.get_confirmation(
+                "CONFIRM STATUS CHANGE (Y/N): "
+            )
+
+            if confirm == "N":
+
+                print("STATUS CHANGE CANCELLED")
+                return
+
+            DoctorService.change_doctor_status(
+                doctor_id,
+                new_status
+            )
+
+            print("\n==========================================")
+            print("DOCTOR STATUS UPDATED SUCCESSFULLY")
+            print("==========================================")
+
+            print("DOCTOR ID      :", doctor.doctor_id)
+            print("DOCTOR NAME    :", doctor.doctor_name)
+            print("OLD STATUS     :", doctor.doctor_status)
+            print("NEW STATUS     :", new_status)
+
         except OperationCancelled as e:
 
             print(e)
-
             return
-        
+
         except Exception as e:
+
             print("ERROR:", e)
 
     @staticmethod
@@ -369,12 +482,14 @@ class DoctorMenu:
 
         while True:
 
-            print("\n===== DOCTOR MANAGEMENT =====")
+            print("\n==========================================")
+            print("         DOCTOR MANAGEMENT")
+            print("==========================================")
             print("1. ADD DOCTOR")
             print("2. SEARCH DOCTOR")
             print("3. VIEW ALL DOCTORS")
             print("4. UPDATE DOCTOR")
-            print("5. DELETE DOCTOR")
+            print("5. CHANGE DOCTOR STATUS")
             print("6. BACK")
 
             try:
@@ -402,7 +517,7 @@ class DoctorMenu:
                 DoctorMenu.update_doctor()
 
             elif choice == "5":
-                DoctorMenu.delete_doctor()
+                DoctorMenu.change_doctor_status()
 
             elif choice == "6":
                 break

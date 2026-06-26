@@ -164,6 +164,29 @@ class PatientService:
             session.close()
 
     @staticmethod
+    def get_active_patients():
+
+        session = get_session()
+
+        try:
+
+            patients = session.execute(
+                select(
+                    PatientMaster
+                ).where(
+                    PatientMaster.patient_status
+                    == "ACTIVE"
+                ).order_by(
+                    PatientMaster.patient_name
+                )
+            ).scalars().all()
+
+            return patients
+
+        finally:
+
+            session.close()
+    @staticmethod
     def update_patient(
         patient_id,
         patient_name,

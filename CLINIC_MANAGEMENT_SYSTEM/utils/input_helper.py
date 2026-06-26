@@ -89,45 +89,8 @@ class InputHelper:
                 print(
                     "ENTER DATE AS YYYY-MM-DD"
                 )
-    @staticmethod
-    def get_update_input(
-        message,
-        current_value
-    ):
 
-        value = input(
-            f"{message} [{current_value}]: "
-        ).strip()
 
-        if value.upper() == "CANCEL":
-
-            raise OperationCancelled(
-                "OPERATION CANCELLED"
-            )
-
-        if value == "":
-
-            return current_value
-
-        return value
-    @staticmethod
-    def get_confirmation(
-        message="CONFIRM (Y/N): "
-    ):
-
-        while True:
-
-            value = InputHelper.get_input(
-                message
-            ).upper()
-
-            if value in ["Y", "N"]:
-
-                return value
-
-            print(
-                "ENTER Y OR N ONLY"
-            )
     @staticmethod
     def get_yes_no(
         message
@@ -212,40 +175,7 @@ class InputHelper:
                 print(
                     "ENTER A VALID NUMBER"
                 )
-    @staticmethod
-    def get_update_date(
-        message,
-        current_value
-    ):
 
-        while True:
-
-            value = input(
-                f"{message} [{current_value}]: "
-            ).strip()
-
-            if value.upper() == "CANCEL":
-
-                raise OperationCancelled(
-                    "OPERATION CANCELLED"
-                )
-
-            if value == "":
-
-                return current_value
-
-            try:
-
-                return datetime.strptime(
-                    value,
-                    "%Y-%m-%d"
-                    ).date()
-
-            except ValueError:
-
-                print(
-                    "ENTER DATE AS YYYY-MM-DD"
-                )
     @staticmethod
     def get_update_choice(
         message,
@@ -297,3 +227,292 @@ class InputHelper:
             print(
                 f"ENTER {'/'.join(choices)} ONLY"
             )
+    @staticmethod
+    def get_status_choice(current_status):
+
+        while True:
+
+            print(f"\nCURRENT STATUS : {current_status}")
+            
+            print("\nSELECT NEW STATUS")
+            print("1. ACTIVE")
+            print("2. INACTIVE")
+            
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "ACTIVE"
+
+            elif choice == "2":
+                
+                return "INACTIVE"
+
+            print("INVALID CHOICE. PLEASE ENTER 1 OR 2.")
+            
+    @staticmethod
+    def get_day_choice():
+
+        while True:
+
+            print("\nSELECT DAY")
+            print("1. MONDAY")
+            print("2. TUESDAY")
+            print("3. WEDNESDAY")
+            print("4. THURSDAY")
+            print("5. FRIDAY")
+            print("6. SATURDAY")
+            print("7. SUNDAY")
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "MONDAY"
+
+            elif choice == "2":
+
+                return "TUESDAY"
+
+            elif choice == "3":
+
+                return "WEDNESDAY"
+
+            elif choice == "4":
+
+                return "THURSDAY"
+
+            elif choice == "5":
+
+                return "FRIDAY"
+
+            elif choice == "6":
+
+                return "SATURDAY"
+
+            elif choice == "7":
+
+                return "SUNDAY"
+
+            print(
+                "INVALID CHOICE"
+            )
+
+    @staticmethod
+    def get_update_day_choice(
+        current_day
+    ):
+
+        while True:
+
+            print("\nSELECT DAY")
+            print("1. MONDAY")
+            print("2. TUESDAY")
+            print("3. WEDNESDAY")
+            print("4. THURSDAY")
+            print("5. FRIDAY")
+            print("6. SATURDAY")
+            print("7. SUNDAY")
+            print("PRESS ENTER TO KEEP CURRENT DAY")
+
+            value = input(
+                f"ENTER CHOICE [{current_day}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_day
+
+            if value == "1":
+
+                return "MONDAY"
+
+            elif value == "2":
+
+                return "TUESDAY"
+
+            elif value == "3":
+
+                return "WEDNESDAY"
+
+            elif value == "4":
+
+                return "THURSDAY"
+
+            elif value == "5":
+
+                return "FRIDAY"
+
+            elif value == "6":
+
+                return "SATURDAY"
+
+            elif value == "7":
+
+                return "SUNDAY"
+
+            print(
+                "INVALID CHOICE"
+            )
+    @staticmethod
+    def get_time(message):
+
+        while True:
+
+            value = InputHelper.get_input(
+                message
+            )
+
+            try:
+
+                datetime.strptime(
+                    value,
+                    "%H:%M"
+                )
+
+                return value
+
+            except ValueError:
+
+                print(
+                    "ENTER TIME AS HH:MM (24-HOUR FORMAT)"
+                )
+
+    @staticmethod
+    def get_update_time(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                datetime.strptime(
+                    value,
+                    "%H:%M"
+                )
+
+                return value
+
+            except ValueError:
+
+                print(
+                    "ENTER TIME AS HH:MM (24-HOUR FORMAT)"
+                )
+
+    @staticmethod
+    def get_room_choice():
+
+        while True:
+
+            print("\nSELECT CONSULTATION ROOM")
+            print("1. CR1")
+            print("2. CR2")
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "CR1"
+
+            elif choice == "2":
+
+                return "CR2"
+
+            print(
+                "INVALID CHOICE"
+            )
+            
+    @staticmethod
+    def get_confirmation():
+
+        while True:
+
+            choice = InputHelper.get_input(
+                "CONFIRM (Y/N): "
+            ).strip().upper()
+
+            if choice in (
+                "Y",
+                "N"
+            ):
+
+                return choice
+
+            print(
+                "ENTER Y OR N"
+            )
+            
+    @staticmethod
+    def get_update_input(
+        message,
+        current_value
+    ):
+
+        value = InputHelper.get_input(
+            f"{message} [{current_value}]: "
+        ).strip()
+
+        if value == "":
+
+            return current_value
+
+        return value
+    
+    @staticmethod
+    def get_update_date(
+        message,
+        current_date
+    ):
+
+        while True:
+
+            value = InputHelper.get_input(
+                f"{message} [{current_date}]: "
+            ).strip()
+
+            if value == "":
+
+                return current_date
+
+            try:
+
+                from datetime import datetime
+
+                return datetime.strptime(
+                    value,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+
+                print(
+                    "INVALID DATE (YYYY-MM-DD)"
+                )

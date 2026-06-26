@@ -3,13 +3,19 @@ from models.consultation_master import ConsultationMaster
 from models.appointment_master import AppointmentMaster
 from connection import get_session
 from utils.id_generator import generate_id
+from utils.validators import (
+    validate_required
+)
 from datetime import datetime
 
 class ConsultationService:
 
     @staticmethod
     def check_in_patient(appointment_id):
-
+        validate_required(
+            appointment_id,
+            "Appointment ID"
+        )
         session = get_session()
 
         try:
@@ -41,7 +47,10 @@ class ConsultationService:
 
     @staticmethod
     def start_consultation(appointment_id):
-
+        validate_required(
+            appointment_id,
+            "Appointment ID"
+        )
         session = get_session()
 
         try:
@@ -101,31 +110,13 @@ class ConsultationService:
             session.close()
             
     @staticmethod
-    def search_consultation(
-        consultation_id
-    ):
-
-        session = get_session()
-
-        try:
-
-            consultation = session.execute(
-                select(ConsultationMaster).where(
-                    ConsultationMaster.consultation_id
-                    == consultation_id
-                )
-            ).scalar_one_or_none()
-
-            return consultation
-
-        finally:
-            session.close()
-            
-    @staticmethod
     def search_consultation_by_id(
         consultation_id
     ):
-
+        validate_required(
+            consultation_id,
+            "Consultation ID"
+        )
         session = get_session()
 
         try:
@@ -145,7 +136,10 @@ class ConsultationService:
     def search_consultation_by_appointment(
         appointment_id
     ):
-
+        validate_required(
+            appointment_id,
+            "Appointment ID"
+        )
         session = get_session()
 
         try:
@@ -193,6 +187,40 @@ class ConsultationService:
         followup_date
     ):
 
+        validate_required(
+            consultation_id,
+            "Consultation ID"
+        )
+
+        validate_required(
+            diagnosis,
+            "Diagnosis"
+        )
+
+        validate_required(
+            prescription,
+            "Prescription"
+        )
+        
+        symptoms = (
+            symptoms.strip()
+            if symptoms
+            else ""
+        )
+
+        diagnosis = (
+            diagnosis.strip()
+        )
+
+        prescription = (
+            prescription.strip()
+        )
+
+        notes = (
+            notes.strip()
+            if notes
+            else ""
+        )
         session = get_session()
 
         try:
@@ -232,9 +260,21 @@ class ConsultationService:
                 followup_required
             )
 
-            consultation.followup_date = (
-                followup_date
-            )
+            if followup_required == "YES":
+
+                if not followup_date:
+
+                    raise ValueError(
+                        "FOLLOW-UP DATE IS REQUIRED"
+                    )
+
+                consultation.followup_date = (
+                    followup_date
+                )
+
+            else:
+
+                consultation.followup_date = None
 
             consultation.consultation_status = "COMPLETED"
 

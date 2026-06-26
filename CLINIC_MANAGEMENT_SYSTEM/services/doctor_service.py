@@ -269,7 +269,10 @@ class DoctorService:
             session.close()
             
     @staticmethod
-    def delete_doctor(doctor_id):
+    def change_doctor_status(
+        doctor_id,
+        new_status
+    ):
 
         session = get_session()
 
@@ -282,19 +285,34 @@ class DoctorService:
             ).scalar_one_or_none()
 
             if not doctor:
-                raise ValueError("Doctor not found")
 
-            doctor.doctor_status = "INACTIVE"
+                raise ValueError(
+                    "Doctor not found"
+                )
+
+            if doctor.doctor_status == new_status:
+
+                raise ValueError(
+                    f"Doctor is already {new_status}"
+                )
+
+            validate_status(
+                new_status
+            )
+
+            doctor.doctor_status = new_status
 
             session.commit()
 
             return True
 
         except Exception:
+
             session.rollback()
             raise
-            
+
         finally:
+
             session.close()
             
     @staticmethod

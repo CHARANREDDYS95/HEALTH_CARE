@@ -8,9 +8,9 @@ class BillingMenu:
 
         while True:
 
-            print(
-                "\n===== SEARCH BILL ====="
-            )
+            print("\n==========================================")
+            print("           SEARCH BILL")
+            print("==========================================")
 
             print("1. SEARCH BY BILL ID")
             print("2. SEARCH BY CONSULTATION ID")
@@ -64,9 +64,9 @@ class BillingMenu:
 
                     continue
 
-                print(
-                    "\n===== BILL DETAILS ====="
-                )
+                print("\n==========================================")
+                print("            BILL DETAILS")
+                print("==========================================")
 
                 print(
                     "BILL ID :",
@@ -134,19 +134,31 @@ class BillingMenu:
 
                 return
 
-            print(
-                "\n===== ALL BILLS ====="
-            )
+            print("\n==========================================")
+            print("            ALL BILLS")
+            print("==========================================")
 
             for bill in bills:
 
+                print("------------------------------------------")
+
                 print(
-                    bill.bill_id,
-                    "|",
-                    bill.consultation_id,
-                    "|",
-                    bill.total_amount,
-                    "|",
+                    "BILL ID         :",
+                    bill.bill_id
+                )
+
+                print(
+                    "CONSULTATION ID :",
+                    bill.consultation_id
+                )
+
+                print(
+                    "TOTAL AMOUNT    :",
+                    bill.total_amount
+                )
+
+                print(
+                    "STATUS          :",
                     bill.bill_status
                 )
 
@@ -180,8 +192,12 @@ class BillingMenu:
                 )
             )
 
+            print("\n==========================================")
+            print("BILL GENERATED SUCCESSFULLY")
+            print("==========================================")
             print(
-                f"BILL GENERATED SUCCESSFULLY. ID: {bill_id}"
+                "BILL ID :",
+                bill_id
             )
         except OperationCancelled as e:
 
@@ -225,14 +241,20 @@ class BillingMenu:
                 )
 
                 return
-            BillingService.process_payment(
-                bill_id,
-                payment_mode,
-                transaction_reference
+            payment_id = (
+                BillingService.process_payment(
+                    bill_id,
+                    payment_mode,
+                    transaction_reference
+                )
             )
 
+            print("\n==========================================")
+            print("PAYMENT PROCESSED SUCCESSFULLY")
+            print("==========================================")
             print(
-                "PAYMENT PROCESSED SUCCESSFULLY"
+                "PAYMENT ID :",
+                payment_id
             )
         except OperationCancelled as e:
 
@@ -247,9 +269,9 @@ class BillingMenu:
 
         while True:
 
-            print(
-                "\n===== BILLING & PAYMENT MANAGEMENT ====="
-            )
+            print("\n==========================================")
+            print("      BILLING MANAGEMENT")
+            print("==========================================")
             print("1. GENERATE BILL")
             print("2. SEARCH BILL")
             print("3. PROCESS PAYMENT")

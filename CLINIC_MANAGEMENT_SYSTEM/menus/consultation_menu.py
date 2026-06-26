@@ -19,9 +19,9 @@ class ConsultationMenu:
                 appointment_id
             )
 
-            print(
-                "PATIENT CHECKED-IN SUCCESSFULLY"
-            )
+            print("\n==========================================")
+            print("PATIENT CHECKED-IN SUCCESSFULLY")
+            print("==========================================")
         except OperationCancelled as e:
 
             print(e)
@@ -49,8 +49,12 @@ class ConsultationMenu:
                 )
             )
 
+            print("\n==========================================")
+            print("CONSULTATION STARTED SUCCESSFULLY")
+            print("==========================================")
             print(
-                f"CONSULTATION STARTED SUCCESSFULLY. ID: {consultation_id}"
+                "CONSULTATION ID :",
+                consultation_id
             )
         except OperationCancelled as e:
 
@@ -110,9 +114,9 @@ class ConsultationMenu:
                 followup_date
             )
 
-            print(
-                "CONSULTATION COMPLETED SUCCESSFULLY"
-            )
+            print("\n==========================================")
+            print("CONSULTATION COMPLETED SUCCESSFULLY")
+            print("==========================================")
         except OperationCancelled as e:
 
             print(e)
@@ -126,9 +130,9 @@ class ConsultationMenu:
 
         while True:
 
-            print(
-                "\n===== SEARCH CONSULTATION ====="
-            )
+            print("\n==========================================")
+            print("       CONSULTATION DETAILS")
+            print("==========================================")
 
             print("1. SEARCH BY CONSULTATION ID")
             print("2. SEARCH BY APPOINTMENT ID")
@@ -180,9 +184,9 @@ class ConsultationMenu:
 
                     continue
 
-                print(
-                    "\n===== CONSULTATION DETAILS ====="
-                )
+                print("\n==========================================")
+                print("       SEARCH CONSULTATION")
+                print("==========================================")
 
                 print(
                     "CONSULTATION ID :",
@@ -255,13 +259,21 @@ class ConsultationMenu:
 
             for consultation in consultations:
 
+                print("------------------------------------------")
                 print(
-                    consultation.consultation_id,
-                    "|",
-                    consultation.appointment_id,
-                    "|",
-                    consultation.diagnosis,
-                    "|",
+                    "CONSULTATION ID :",
+                    consultation.consultation_id
+                )
+                print(
+                    "APPOINTMENT ID  :",
+                    consultation.appointment_id
+                )
+                print(
+                    "DIAGNOSIS       :",
+                    consultation.diagnosis
+                )
+                print(
+                    "STATUS          :",
                     consultation.consultation_status
                 )
 
