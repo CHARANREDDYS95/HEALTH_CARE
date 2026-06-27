@@ -1,9 +1,7 @@
 from services.doctor_service import DoctorService
 from utils.input_helper import (InputHelper,OperationCancelled)
-from utils.display_constants import (
+from utils.display_constants import (TABLE_LINE)
 
-    TABLE_LINE
-)
 class DoctorMenu:
 
     @staticmethod
@@ -505,22 +503,32 @@ class DoctorMenu:
                 break
 
             if choice == "1":
+
                 DoctorMenu.add_doctor()
 
             elif choice == "2":
+
                 DoctorMenu.search_doctor()
 
             elif choice == "3":
+
                 DoctorMenu.view_all_doctors()
 
             elif choice == "4":
+
                 DoctorMenu.update_doctor()
 
             elif choice == "5":
+
                 DoctorMenu.change_doctor_status()
 
+
             elif choice == "6":
+
                 break
 
             else:
-                print("INVALID CHOICE")
+
+                print(
+                    "INVALID CHOICE"
+                )

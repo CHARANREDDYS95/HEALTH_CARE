@@ -7,6 +7,9 @@ from utils.validators import (
     validate_required
 )
 from datetime import datetime
+from models.doctor_availability import (
+    DoctorAvailability
+)
 
 class ConsultationService:
 
@@ -297,4 +300,118 @@ class ConsultationService:
             raise
 
         finally:
+            session.close()
+            
+    @staticmethod
+    def search_consultations_by_patient(
+
+        patient_id
+
+    ):
+
+        validate_required(
+
+            patient_id,
+
+            "Patient ID"
+
+        )
+
+        session = get_session()
+
+        try:
+
+            consultations = session.execute(
+
+                select(
+
+                    ConsultationMaster
+
+                ).join(
+
+                    AppointmentMaster,
+
+                    ConsultationMaster.appointment_id
+                    ==
+                    AppointmentMaster.appointment_id
+
+                ).where(
+
+                    AppointmentMaster.patient_id
+                    ==
+                    patient_id
+
+                ).order_by(
+
+                    ConsultationMaster.consultation_date
+
+                )
+
+            ).scalars().all()
+
+            return consultations
+
+        finally:
+
+            session.close()
+            
+    @staticmethod
+    def search_consultations_by_doctor(
+
+        doctor_id
+
+    ):
+
+        validate_required(
+
+            doctor_id,
+
+            "Doctor ID"
+
+        )
+
+        session = get_session()
+
+        try:
+
+            consultations = session.execute(
+
+                select(
+
+                    ConsultationMaster
+
+                ).join(
+
+                    AppointmentMaster,
+
+                    ConsultationMaster.appointment_id
+                    ==
+                    AppointmentMaster.appointment_id
+
+                ).join(
+
+                    DoctorAvailability,
+
+                    AppointmentMaster.availability_id
+                    ==
+                    DoctorAvailability.availability_id
+
+                ).where(
+
+                    DoctorAvailability.doctor_id
+                    ==
+                    doctor_id
+
+                ).order_by(
+
+                    ConsultationMaster.consultation_date
+
+                )
+
+            ).scalars().all()
+
+            return consultations
+
+        finally:
+
             session.close()

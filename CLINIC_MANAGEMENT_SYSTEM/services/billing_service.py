@@ -299,7 +299,7 @@ class BillingService:
             payment_id = generate_id(
                 "PAYMENT_MASTER",
                 "PAYMENT_ID",
-                "PM"
+                "PAY"
             )
 
             payment = PaymentMaster(

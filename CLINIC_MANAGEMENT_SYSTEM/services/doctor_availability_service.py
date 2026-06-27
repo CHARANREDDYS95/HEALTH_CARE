@@ -1,4 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import (
+    select,
+    case
+)
 from connection import get_session
 from utils.id_generator import generate_id
 from utils.validators import (
@@ -13,6 +16,66 @@ from models.session_master import SessionMaster
 
 class DoctorAvailabilityService:
 
+    @staticmethod
+    def validate_overlapping_session(
+        existing_session_id,
+        new_session_id
+    ):
+
+        if (
+            existing_session_id == "S001"
+            and
+            new_session_id == "S002"
+        ) or (
+            existing_session_id == "S002"
+            and
+            new_session_id == "S001"
+        ):
+
+            raise ValueError(
+                "DOCTOR ALREADY HAS AN OVERLAPPING MORNING SESSION"
+            )
+
+        if (
+            existing_session_id == "S003"
+            and
+            new_session_id == "S004"
+        ) or (
+            existing_session_id == "S004"
+            and
+            new_session_id == "S003"
+        ):
+
+            raise ValueError(
+                "DOCTOR ALREADY HAS AN OVERLAPPING EVENING SESSION"
+            )    
+
+    @staticmethod
+    def _is_overlapping_session(
+        session1,
+        session2
+    ):
+
+        overlapping_sessions = {
+
+            "S001": ["S002"],
+
+            "S002": ["S001"],
+
+            "S003": ["S004"],
+
+            "S004": ["S003"]
+
+        }
+
+        return (
+            session2
+            in
+            overlapping_sessions.get(
+                session1,
+                []
+            )
+        )
     @staticmethod
     def assign_doctor(
         doctor_id,
@@ -100,7 +163,34 @@ class DoctorAvailabilityService:
                 raise ValueError(
                     "DOCTOR IS ALREADY ASSIGNED TO THIS SESSION"
                 )
+            existing_schedule = session.execute(
 
+                select(
+                    DoctorAvailability
+                ).where(
+
+                    DoctorAvailability.doctor_id
+                    == doctor_id,
+
+                    DoctorAvailability.available_day
+                    == available_day,
+
+                    DoctorAvailability.status
+                    == "ACTIVE"
+
+                )
+
+            ).scalars().all()
+
+            for schedule in existing_schedule:
+
+                DoctorAvailabilityService.validate_overlapping_session(
+
+                    schedule.session_id,
+
+                    session_id
+
+                )
             if max_patients > session_master.max_patients:
 
                 raise ValueError(
@@ -110,7 +200,7 @@ class DoctorAvailabilityService:
             availability_id = generate_id(
                 "DOCTOR_AVAILABILITY",
                 "AVAILABILITY_ID",
-                "A"
+                "DA"
             )
 
             availability = DoctorAvailability(
@@ -419,7 +509,37 @@ class DoctorAvailabilityService:
                 raise ValueError(
                     "DOCTOR IS ALREADY ASSIGNED TO THIS SESSION"
                 )
+            existing_schedule = session.execute(
 
+                select(
+                    DoctorAvailability
+                ).where(
+
+                    DoctorAvailability.doctor_id
+                    == doctor_id,
+
+                    DoctorAvailability.available_day
+                    == available_day,
+
+                    DoctorAvailability.status
+                    == "ACTIVE",
+
+                    DoctorAvailability.availability_id
+                    != availability_id
+
+                )
+
+            ).scalars().all()
+
+            for schedule in existing_schedule:
+
+                DoctorAvailabilityService.validate_overlapping_session(
+
+                    schedule.session_id,
+
+                    session_id
+
+                )
             if max_patients > session_master.max_patients:
 
                 raise ValueError(
@@ -539,6 +659,124 @@ class DoctorAvailabilityService:
             ).all()
 
             return availability
+
+        finally:
+
+            session.close()
+                      
+    @staticmethod
+    def get_doctor_schedule(
+        doctor_id
+    ):
+
+        validate_required(
+            doctor_id,
+            "Doctor ID"
+        )
+
+        session = get_session()
+
+        try:
+
+            doctor = session.execute(
+                select(
+                    DoctorMaster
+                ).where(
+                    DoctorMaster.doctor_id
+                    ==
+                    doctor_id
+                )
+            ).scalar_one_or_none()
+
+            if not doctor:
+
+                raise ValueError(
+                    "DOCTOR NOT FOUND"
+                )
+
+            schedules = session.execute(
+
+                select(
+                    DoctorAvailability,
+                    SessionMaster
+                ).join(
+                    SessionMaster,
+                    DoctorAvailability.session_id
+                    ==
+                    SessionMaster.session_id
+                ).where(
+                    DoctorAvailability.doctor_id
+                    ==
+                    doctor_id
+                ).order_by(
+
+                    case(
+
+                        (
+
+                            DoctorAvailability.available_day
+                            == "MONDAY",
+
+                            1
+
+                        ),
+
+                        (
+
+                            DoctorAvailability.available_day
+                            == "TUESDAY",
+
+                            2
+
+                        ),
+
+                        (
+
+                            DoctorAvailability.available_day
+                            == "WEDNESDAY",
+
+                            3
+
+                        ),
+
+                        (
+
+                            DoctorAvailability.available_day
+                            == "THURSDAY",
+
+                            4
+
+                        ),
+
+                        (
+
+                            DoctorAvailability.available_day
+                            == "FRIDAY",
+
+                            5
+
+                        ),
+
+                        (
+
+                            DoctorAvailability.available_day
+                            == "SATURDAY",
+
+                            6
+
+                        ),
+
+                        else_=7
+
+                    ),
+
+                    SessionMaster.start_time
+
+                )
+
+            ).all()
+
+            return schedules
 
         finally:
 

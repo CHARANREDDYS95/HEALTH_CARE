@@ -552,3 +552,84 @@ class AppointmentService:
         finally:
 
             session.close()
+            
+    @staticmethod
+    def search_appointments_by_doctor(
+        doctor_id
+    ):
+
+        validate_required(
+            doctor_id,
+            "Doctor ID"
+        )
+
+        session = get_session()
+
+        try:
+
+            appointments = session.execute(
+
+                select(
+                    AppointmentMaster
+                ).join(
+
+                    DoctorAvailability,
+
+                    AppointmentMaster.availability_id
+                    ==
+                    DoctorAvailability.availability_id
+
+                ).where(
+
+                    DoctorAvailability.doctor_id
+                    ==
+                    doctor_id
+
+                ).order_by(
+
+                    AppointmentMaster.appointment_date,
+
+                    AppointmentMaster.token_no
+
+                )
+
+            ).scalars().all()
+
+            return appointments
+
+        finally:
+
+            session.close()
+
+    @staticmethod
+    def search_appointments_by_date(
+        appointment_date
+    ):
+
+        session = get_session()
+
+        try:
+
+            appointments = session.execute(
+
+                select(
+                    AppointmentMaster
+                ).where(
+
+                    AppointmentMaster.appointment_date
+                    ==
+                    appointment_date
+
+                ).order_by(
+
+                    AppointmentMaster.token_no
+
+                )
+
+            ).scalars().all()
+
+            return appointments
+
+        finally:
+
+            session.close()

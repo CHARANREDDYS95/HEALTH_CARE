@@ -3,7 +3,9 @@ from utils.input_helper import (
     InputHelper,
     OperationCancelled
 )
-
+from utils.display_constants import (
+    TABLE_LINE
+)
 
 class DoctorAvailabilityMenu:
 
@@ -163,16 +165,12 @@ class DoctorAvailabilityMenu:
 
                         continue
 
-                    print("\n==========================================")
-                    print("      AVAILABILITY DETAILS")
-                    print("==========================================")
-                    print("AVAILABILITY ID :", availability.availability_id)
-                    print("DOCTOR ID      :", availability.doctor_id)
-                    print("SESSION ID     :", availability.session_id)
-                    print("DAY            :", availability.available_day)
-                    print("MAX PATIENTS   :", availability.max_patients)
-                    print("STATUS         :", availability.status)
+                    DoctorAvailabilityMenu.display_availability_table(
 
+                        [availability]
+
+                    )
+                    
                 elif choice == "2":
 
                     availability_list = (
@@ -183,23 +181,12 @@ class DoctorAvailabilityMenu:
                         )
                     )
 
-                    if not availability_list:
+                    DoctorAvailabilityMenu.display_availability_table(
 
-                        print(
-                            "NO RECORDS FOUND"
-                        )
+                        availability_list
 
-                        continue
-
-                    for availability in availability_list:
-
-                        print("------------------------------------------")
-                        print("AVAILABILITY ID :", availability.availability_id)
-                        print("SESSION ID      :", availability.session_id)
-                        print("DAY             :", availability.available_day)
-                        print("MAX PATIENTS    :", availability.max_patients)
-                        print("STATUS          :", availability.status)
-
+                    )
+                    
                 elif choice == "3":
 
                     availability_list = (
@@ -210,23 +197,12 @@ class DoctorAvailabilityMenu:
                         )
                     )
 
-                    if not availability_list:
+                    DoctorAvailabilityMenu.display_availability_table(
 
-                        print(
-                            "NO RECORDS FOUND"
-                        )
+                        availability_list
 
-                        continue
-
-                    for availability in availability_list:
-
-                        print("------------------------------------------")
-                        print("AVAILABILITY ID :", availability.availability_id)
-                        print("DOCTOR ID       :", availability.doctor_id)
-                        print("DAY             :", availability.available_day)
-                        print("MAX PATIENTS    :", availability.max_patients)
-                        print("STATUS          :", availability.status)
-
+                    )
+                    
                 elif choice == "4":
 
                     availability_list = (
@@ -237,23 +213,12 @@ class DoctorAvailabilityMenu:
                         )
                     )
 
-                    if not availability_list:
+                    DoctorAvailabilityMenu.display_availability_table(
 
-                        print(
-                            "NO RECORDS FOUND"
-                        )
+                        availability_list
 
-                        continue
-
-                    for availability in availability_list:
-
-                        print("------------------------------------------")
-                        print("AVAILABILITY ID :", availability.availability_id)
-                        print("DOCTOR ID       :", availability.doctor_id)
-                        print("SESSION ID      :", availability.session_id)
-                        print("MAX PATIENTS    :", availability.max_patients)
-                        print("STATUS          :", availability.status)
-
+                    )
+                    
                 elif choice == "5":
 
                     return
@@ -274,61 +239,34 @@ class DoctorAvailabilityMenu:
                     "ERROR:",
                     e
                 )
+                
     @staticmethod
     def view_all_availability():
 
         try:
 
             availability_list = (
+
                 DoctorAvailabilityService.view_all_availability()
+
             )
 
-            if not availability_list:
+            DoctorAvailabilityMenu.display_availability_table(
 
-                print(
-                    "NO AVAILABILITY RECORDS FOUND"
-                )
+                availability_list
 
-                return
-
-            print("\n==========================================")
-            print("      DOCTOR AVAILABILITY LIST")
-            print("==========================================")
-
-            for availability in availability_list:
-
-                print("------------------------------------------")
-                print(
-                    "AVAILABILITY ID :",
-                    availability.availability_id
-                )
-                print(
-                    "DOCTOR ID      :",
-                    availability.doctor_id
-                )
-                print(
-                    "SESSION ID     :",
-                    availability.session_id
-                )
-                print(
-                    "AVAILABLE DAY  :",
-                    availability.available_day
-                )
-                print(
-                    "MAX PATIENTS   :",
-                    availability.max_patients
-                )
-                print(
-                    "STATUS         :",
-                    availability.status
-                )
+            )
 
         except Exception as e:
 
             print(
+
                 "ERROR:",
+
                 e
+
             )
+            
     @staticmethod
     def update_availability():
 
@@ -481,3 +419,54 @@ class DoctorAvailabilityMenu:
                 "ERROR:",
                 e
             )
+
+    @staticmethod
+    def display_availability_table(
+        availability_list
+    ):
+
+        if not availability_list:
+
+            print(
+                "NO RECORDS FOUND"
+            )
+
+            return
+
+        print("\n==========================================================================================")
+        print("                           DOCTOR AVAILABILITY LIST")
+        print("==========================================================================================")
+
+        print(
+
+            f"{'ID':<10}"
+            f"{'DOCTOR':<10}"
+            f"{'SESSION':<10}"
+            f"{'DAY':<15}"
+            f"{'MAX':<10}"
+            f"{'STATUS':<10}"
+
+        )
+
+        print(TABLE_LINE)
+
+        for availability in availability_list:
+
+            print(
+
+                f"{availability.availability_id:<10}"
+                f"{availability.doctor_id:<10}"
+                f"{availability.session_id:<10}"
+                f"{availability.available_day:<15}"
+                f"{availability.max_patients:<10}"
+                f"{availability.status:<10}"
+
+            )
+
+        print(TABLE_LINE)
+
+        print(
+
+            f"TOTAL RECORDS : {len(availability_list)}"
+
+        )

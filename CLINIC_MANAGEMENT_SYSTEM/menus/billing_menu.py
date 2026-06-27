@@ -1,5 +1,8 @@
 from services.billing_service import BillingService
 from utils.input_helper import (InputHelper,OperationCancelled)
+from services.consultation_service import (
+    ConsultationService
+)
 
 class BillingMenu:
           
@@ -36,12 +39,81 @@ class BillingMenu:
 
                 elif choice == "2":
 
-                    bill = (
-                        BillingService.search_bill_by_consultation(
-                            InputHelper.get_input(
-                                "ENTER CONSULTATION ID: "
-                            ).strip().upper()
+                    consultations = (
+
+                        ConsultationService.get_all_consultations()
+
+                    )
+
+                    completed_consultations = [
+
+                        consultation
+
+                        for consultation in consultations
+
+                        if consultation.consultation_status
+                        == "COMPLETED"
+
+                    ]
+
+                    if not completed_consultations:
+
+                        print(
+
+                            "NO COMPLETED CONSULTATIONS FOUND"
+
                         )
+
+                        continue
+
+                    print("\n====================================================================================================")
+                    print("                                   COMPLETED CONSULTATIONS")
+                    print("====================================================================================================")
+
+                    print(
+
+                        f"{'CONSULT ID':<15}"
+                        f"{'APP ID':<12}"
+                        f"{'DIAGNOSIS':<30}"
+
+                    )
+
+                    print(
+
+                        "=" * 60
+
+                    )
+
+                    for consultation in completed_consultations:
+
+                        print(
+
+                            f"{consultation.consultation_id:<15}"
+                            f"{consultation.appointment_id:<12}"
+                            f"{str(consultation.diagnosis):<30}"
+
+                        )
+
+                    print(
+
+                        "=" * 60
+
+                    )
+
+                    consultation_id = InputHelper.get_input(
+
+                        "\nENTER CONSULTATION ID: "
+
+                    ).strip().upper()
+
+                    bill = (
+
+                        BillingService.search_bill_by_consultation(
+
+                            consultation_id
+
+                        )
+
                     )
 
                 elif choice == "3":
@@ -134,33 +206,47 @@ class BillingMenu:
 
                 return
 
-            print("\n==========================================")
-            print("            ALL BILLS")
-            print("==========================================")
+            print("\n========================================================================================================")
+            print("                                           ALL BILLS")
+            print("========================================================================================================")
+
+            print(
+
+                f"{'BILL ID':<12}"
+                f"{'CONSULT ID':<15}"
+                f"{'CONSULT FEE':<15}"
+                f"{'DISCOUNT':<12}"
+                f"{'TAX':<10}"
+                f"{'TOTAL':<12}"
+                f"{'STATUS':<15}"
+
+            )
+
+            print(
+
+                "=" * 95
+
+            )
 
             for bill in bills:
 
-                print("------------------------------------------")
-
                 print(
-                    "BILL ID         :",
-                    bill.bill_id
+
+                    f"{bill.bill_id:<12}"
+                    f"{bill.consultation_id:<15}"
+                    f"{bill.consultation_fee:<15.2f}"
+                    f"{bill.discount_amount:<12.2f}"
+                    f"{bill.tax_amount:<10.2f}"
+                    f"{bill.total_amount:<12.2f}"
+                    f"{bill.bill_status:<15}"
+
                 )
 
-                print(
-                    "CONSULTATION ID :",
-                    bill.consultation_id
-                )
+            print(
 
-                print(
-                    "TOTAL AMOUNT    :",
-                    bill.total_amount
-                )
+                "=" * 95
 
-                print(
-                    "STATUS          :",
-                    bill.bill_status
-                )
+            )
 
         except Exception as e:
             print("ERROR:", e)
@@ -171,6 +257,67 @@ class BillingMenu:
         try:
             
             print("\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION")
+            
+            consultations = (
+
+                ConsultationService.get_all_consultations()
+
+            )
+
+            completed_consultations = [
+
+                consultation
+
+                for consultation in consultations
+
+                if consultation.consultation_status
+                == "COMPLETED"
+
+            ]
+
+            if not completed_consultations:
+
+                print(
+
+                    "NO COMPLETED CONSULTATIONS FOUND"
+
+                )
+
+                return
+
+            print("\n====================================================================================================")
+            print("                                   COMPLETED CONSULTATIONS")
+            print("====================================================================================================")
+
+            print(
+
+                f"{'CONSULT ID':<15}"
+                f"{'APP ID':<12}"
+                f"{'STATUS':<20}"
+
+            )
+
+            print(
+
+                "=" * 50
+
+            )
+
+            for consultation in completed_consultations:
+
+                print(
+
+                    f"{consultation.consultation_id:<15}"
+                    f"{consultation.appointment_id:<12}"
+                    f"{consultation.consultation_status:<20}"
+
+                )
+
+            print(
+
+                "=" * 50
+
+            )
             
             consultation_id = InputHelper.get_input(
                 "ENTER CONSULTATION ID: "
@@ -213,6 +360,69 @@ class BillingMenu:
         try:
             
             print("\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION")
+
+            bills = (
+
+                BillingService.get_all_bills()
+
+            )
+
+            pending_bills = [
+
+                bill
+
+                for bill in bills
+
+                if bill.bill_status
+                == "PENDING"
+
+            ]
+
+            if not pending_bills:
+
+                print(
+
+                    "NO PENDING BILLS FOUND"
+
+                )
+
+                return
+
+            print("\n====================================================================================================")
+            print("                                         PENDING BILLS")
+            print("====================================================================================================")
+
+            print(
+
+                f"{'BILL ID':<12}"
+                f"{'CONSULT ID':<15}"
+                f"{'TOTAL':<15}"
+                f"{'STATUS':<15}"
+
+            )
+
+            print(
+
+                "=" * 60
+
+            )
+
+            for bill in pending_bills:
+
+                print(
+
+                    f"{bill.bill_id:<12}"
+                    f"{bill.consultation_id:<15}"
+                    f"{bill.total_amount:<15.2f}"
+                    f"{bill.bill_status:<15}"
+
+                )
+
+            print(
+
+                "=" * 60
+
+            )
 
             bill_id = InputHelper.get_input(
                 "ENTER BILL ID: "
