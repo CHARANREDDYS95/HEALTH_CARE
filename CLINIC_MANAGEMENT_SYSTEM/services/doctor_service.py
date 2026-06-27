@@ -28,7 +28,7 @@ class DoctorService:
         email,
         address,
         consultation_fee,
-        doctor_status,
+
         joining_date
     ):
 
@@ -39,7 +39,7 @@ class DoctorService:
         validate_phone(phone)
         validate_email(email)
         validate_gender(gender)
-        validate_status(doctor_status)
+
 
         validate_positive_number(
             experience_years,
@@ -111,7 +111,7 @@ class DoctorService:
                 address=address,
                 consultation_fee=consultation_fee,
                 consultation_duration=12,
-                doctor_status=doctor_status,
+                doctor_status="ACTIVE",
                 joining_date=joining_date
             )
 
@@ -256,15 +256,19 @@ class DoctorService:
     def view_all_doctors():
 
         session = get_session()
-        
+
         try:
 
             doctors = session.execute(
-                select(DoctorMaster)
+                select(
+                    DoctorMaster
+                ).order_by(
+                    DoctorMaster.doctor_id
+                )
             ).scalars().all()
 
             return doctors
-        
+
         finally:
             session.close()
 
@@ -352,8 +356,12 @@ class DoctorService:
         try:
 
             doctors = session.execute(
-                select(DoctorMaster).where(
+                select(
+                    DoctorMaster
+                ).where(
                     DoctorMaster.doctor_status == "ACTIVE"
+                ).order_by(
+                    DoctorMaster.doctor_id
                 )
             ).scalars().all()
 
@@ -361,4 +369,3 @@ class DoctorService:
 
         finally:
             session.close()
-            

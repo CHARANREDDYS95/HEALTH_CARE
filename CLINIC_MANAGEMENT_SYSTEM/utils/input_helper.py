@@ -451,23 +451,31 @@ class InputHelper:
             )
             
     @staticmethod
-    def get_confirmation():
+    def get_confirmation(
+        message="CONFIRM ACTION"
+    ):
 
         while True:
 
+            print(f"\n{message}")
+
+            print("1. YES")
+            print("2. NO")
+
             choice = InputHelper.get_input(
-                "CONFIRM (Y/N): "
-            ).strip().upper()
+                "ENTER CHOICE: "
+            )
 
-            if choice in (
-                "Y",
-                "N"
-            ):
+            if choice == "1":
 
-                return choice
+                return "Y"
+
+            elif choice == "2":
+
+                return "N"
 
             print(
-                "ENTER Y OR N"
+                "INVALID CHOICE. PLEASE ENTER 1 OR 2."
             )
             
     @staticmethod
@@ -476,15 +484,23 @@ class InputHelper:
         current_value
     ):
 
-        value = InputHelper.get_input(
-            f"{message} [{current_value}]: "
-        ).strip()
+        while True:
 
-        if value == "":
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
 
-            return current_value
+            if value.upper() == "CANCEL":
 
-        return value
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            return value
     
     @staticmethod
     def get_update_date(
@@ -516,3 +532,177 @@ class InputHelper:
                 print(
                     "INVALID DATE (YYYY-MM-DD)"
                 )
+                
+    @staticmethod
+    def get_gender_choice():
+
+        while True:
+
+            print("\nSELECT GENDER")
+            print("1. MALE")
+            print("2. FEMALE")
+            print("3. OTHER")
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "M"
+
+            elif choice == "2":
+
+                return "F"
+
+            elif choice == "3":
+
+                return "O"
+
+            print(
+                "INVALID CHOICE. PLEASE ENTER 1, 2 OR 3."
+            )
+            
+    @staticmethod
+    def get_blood_group_choice():
+
+        while True:
+
+            print("\nSELECT BLOOD GROUP")
+
+            print("1. A+")
+            print("2. A-")
+            print("3. B+")
+            print("4. B-")
+            print("5. AB+")
+            print("6. AB-")
+            print("7. O+")
+            print("8. O-")
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "A+"
+
+            elif choice == "2":
+
+                return "A-"
+
+            elif choice == "3":
+
+                return "B+"
+
+            elif choice == "4":
+
+                return "B-"
+
+            elif choice == "5":
+
+                return "AB+"
+
+            elif choice == "6":
+
+                return "AB-"
+
+            elif choice == "7":
+
+                return "O+"
+
+            elif choice == "8":
+
+                return "O-"
+
+            print(
+                "INVALID CHOICE. PLEASE ENTER 1 TO 8."
+            )
+            
+    @staticmethod
+    def get_marital_status_choice():
+
+        while True:
+
+            print("\nSELECT MARITAL STATUS")
+
+            print("1. SINGLE")
+            print("2. MARRIED")
+            print("3. DIVORCED")
+            print("4. WIDOWED")
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "SINGLE"
+
+            elif choice == "2":
+
+                return "MARRIED"
+
+            elif choice == "3":
+
+                return "DIVORCED"
+
+            elif choice == "4":
+
+                return "WIDOWED"
+
+            print(
+                "INVALID CHOICE. PLEASE ENTER 1 TO 4."
+            )
+            
+    @staticmethod
+    def get_update_marital_status(
+        current_value
+    ):
+
+        while True:
+
+            print(
+                f"\nCURRENT MARITAL STATUS : {current_value}"
+            )
+
+            print("PRESS ENTER TO KEEP THE CURRENT VALUE")
+
+            print("1. SINGLE")
+            print("2. MARRIED")
+            print("3. DIVORCED")
+            print("4. WIDOWED")
+
+            choice = input(
+                "ENTER CHOICE: "
+            ).strip()
+
+            if choice.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if choice == "":
+
+                return current_value
+
+            elif choice == "1":
+
+                return "SINGLE"
+
+            elif choice == "2":
+
+                return "MARRIED"
+
+            elif choice == "3":
+
+                return "DIVORCED"
+
+            elif choice == "4":
+
+                return "WIDOWED"
+
+            print(
+                "INVALID CHOICE"
+            )

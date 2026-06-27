@@ -7,6 +7,8 @@ from utils.input_helper import (
 from utils.display_constants import (
     TABLE_LINE
 )
+from datetime import date
+
 
 
 class PatientMenu:
@@ -24,10 +26,7 @@ class PatientMenu:
                 "ENTER PATIENT NAME: "
             )
 
-            gender = InputHelper.get_choice(
-                "ENTER GENDER (M/F/O): ",
-                ["M", "F", "O"]
-            )
+            gender = InputHelper.get_gender_choice()
 
             dob = InputHelper.get_date(
                 "ENTER DOB (YYYY-MM-DD): "
@@ -45,17 +44,13 @@ class PatientMenu:
                 "ENTER CITY: "
             )
 
-            blood_group = InputHelper.get_input(
-                "ENTER BLOOD GROUP: "
-            )
+            blood_group = InputHelper.get_blood_group_choice()
 
             occupation = InputHelper.get_input(
                 "ENTER OCCUPATION: "
             )
 
-            marital_status = InputHelper.get_input(
-                "ENTER MARITAL STATUS: "
-            )
+            marital_status = InputHelper.get_marital_status_choice()
 
             allergies = InputHelper.get_input(
                 "ENTER ALLERGIES: "
@@ -68,15 +63,9 @@ class PatientMenu:
             emergency_phone = InputHelper.get_input(
                 "ENTER EMERGENCY PHONE: "
             )
+            
+            registration_date = date.today()
 
-            registration_date = InputHelper.get_date(
-                "ENTER REGISTRATION DATE (YYYY-MM-DD): "
-            )
-
-            patient_status = InputHelper.get_choice(
-                "ENTER STATUS (ACTIVE/INACTIVE): ",
-                ["ACTIVE", "INACTIVE"]
-            )
 
             patient_id = PatientService.register_patient(
                 patient_name,
@@ -91,8 +80,8 @@ class PatientMenu:
                 allergies,
                 emergency_contact_name,
                 emergency_phone,
-                registration_date,
-                patient_status
+                registration_date
+
             )
 
             print("\n==========================================")
@@ -118,7 +107,7 @@ class PatientMenu:
     def search_patient():
 
         while True:
-
+            
             print("\n==========================================")
             print("          SEARCH PATIENT")
             print("==========================================")
@@ -133,6 +122,10 @@ class PatientMenu:
                 
                 choice = InputHelper.get_input(
                     "ENTER CHOICE: "
+                )
+                
+                print(
+                    "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
                 )
 
                 if choice == "1":
@@ -342,6 +335,11 @@ class PatientMenu:
                 print("        PATIENT NOT FOUND")
                 print("==========================================")
                 return
+            
+            print("\n==========================================")
+            print("LEAVE THE FIELD EMPTY AND PRESS ENTER TO KEEP THE CURRENT VALUE")
+            print("TYPE A NEW VALUE AND PRESS ENTER TO UPDATE THE FIELD")
+            print("==========================================")
 
             patient_name = InputHelper.get_update_input(
                 "ENTER PATIENT NAME",
@@ -368,9 +366,10 @@ class PatientMenu:
                 patient.occupation
             )
 
-            marital_status = InputHelper.get_update_input(
-                "ENTER MARITAL STATUS",
-                patient.marital_status
+            marital_status = (
+                InputHelper.get_update_marital_status(
+                    patient.marital_status
+                )
             )
 
             allergies = InputHelper.get_update_input(
@@ -388,11 +387,6 @@ class PatientMenu:
                 patient.emergency_phone
             )
 
-            patient_status = InputHelper.get_update_choice(
-                "ENTER STATUS",
-                patient.patient_status,
-                ["ACTIVE", "INACTIVE"]
-            )
 
             PatientService.update_patient(
                 patient_id,
@@ -405,7 +399,7 @@ class PatientMenu:
                 allergies,
                 emergency_contact_name,
                 emergency_phone,
-                patient_status
+                patient.patient_status
             )
 
             print("\n==========================================")

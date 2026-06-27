@@ -26,8 +26,7 @@ class PatientService:
         allergies,
         emergency_contact_name,
         emergency_phone,
-        registration_date,
-        patient_status
+        registration_date
     ):
 
         validate_required(patient_name, "Patient Name")
@@ -73,7 +72,7 @@ class PatientService:
                 emergency_contact_name=emergency_contact_name,
                 emergency_phone=emergency_phone,
                 registration_date=registration_date,
-                patient_status=patient_status
+                patient_status="ACTIVE"
             )
 
             session.add(patient)
@@ -157,12 +156,16 @@ class PatientService:
         try:
 
             return session.execute(
-                select(PatientMaster)
+                select(
+                    PatientMaster
+                ).order_by(
+                    PatientMaster.patient_id
+                )
             ).scalars().all()
 
         finally:
             session.close()
-
+            
     @staticmethod
     def get_active_patients():
 
@@ -186,6 +189,7 @@ class PatientService:
         finally:
 
             session.close()
+            
     @staticmethod
     def update_patient(
         patient_id,
@@ -266,22 +270,3 @@ class PatientService:
 
         finally:
             session.close()
-    @staticmethod
-    def get_active_patients():
-
-        session = get_session()
-
-        try:
-
-            patients = session.execute(
-                select(PatientMaster).where(
-                    PatientMaster.patient_status == "ACTIVE"
-                )
-            ).scalars().all()
-
-            return patients
-
-        finally:
-            session.close()
-                
-       

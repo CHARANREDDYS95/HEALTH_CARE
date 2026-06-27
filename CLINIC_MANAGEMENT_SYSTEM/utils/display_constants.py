@@ -1,2 +1,2 @@
-LINE = "=" * 79
-TABLE_LINE = "-" * 79
+LINE = "=" * 85
+TABLE_LINE = "-" * 85

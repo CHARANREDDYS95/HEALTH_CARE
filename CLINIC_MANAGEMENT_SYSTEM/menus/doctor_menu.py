@@ -1,6 +1,6 @@
 from services.doctor_service import DoctorService
 from utils.input_helper import (InputHelper,OperationCancelled)
-from utils.display_constants import (TABLE_LINE)
+from utils.display_constants import (LINE,TABLE_LINE)
 
 class DoctorMenu:
 
@@ -17,10 +17,7 @@ class DoctorMenu:
                 "ENTER DOCTOR NAME: "
             )
 
-            gender = InputHelper.get_choice(
-                "ENTER GENDER (M/F/O): ",
-                ["M", "F", "O"]
-            )
+            gender = InputHelper.get_gender_choice()
 
             dob = InputHelper.get_date(
                 "ENTER DOB (YYYY-MM-DD): "
@@ -58,14 +55,12 @@ class DoctorMenu:
                 "ENTER CONSULTATION FEE: "
             )
 
-            doctor_status = InputHelper.get_choice(
-                "ENTER STATUS (ACTIVE/INACTIVE): ",
-                ["ACTIVE", "INACTIVE"]
-            )
-
+            
             joining_date = InputHelper.get_date(
                 "ENTER JOINING DATE (YYYY-MM-DD): "
             )
+            
+
 
             doctor_id = DoctorService.add_doctor(
                 doctor_name,
@@ -79,7 +74,6 @@ class DoctorMenu:
                 email,
                 address,
                 consultation_fee,
-                doctor_status,
                 joining_date
             )
             
@@ -100,9 +94,11 @@ class DoctorMenu:
 
             return
 
-        except Exception as e:
-            print("ERROR:", e)
+        except Exception:
 
+            import traceback
+
+            traceback.print_exc()
     @staticmethod
     def search_doctor():
 
@@ -271,15 +267,15 @@ class DoctorMenu:
             if not doctors:
 
                 print("\n==========================================")
-                print("            DOCTOR LIST")
+                print("               DOCTOR LIST")
                 print("==========================================")
                 print("NO DOCTORS FOUND")
 
                 return
 
-            print("\n===============================================================================")
-            print("                                DOCTOR LIST")
-            print("===============================================================================")
+            print(LINE)
+            print("                                   DOCTOR LIST")
+            print(LINE)
 
             print(
                 f"{'ID':<8}"
@@ -336,6 +332,11 @@ class DoctorMenu:
                 print("        DOCTOR NOT FOUND")
                 print("==========================================")
                 return
+            
+            print("\n==========================================")
+            print("LEAVE THE FIELD EMPTY AND PRESS ENTER TO KEEP THE CURRENT VALUE")
+            print("TYPE A NEW VALUE AND PRESS ENTER TO UPDATE THE FIELD")
+            print("==========================================")
 
             doctor_name = InputHelper.get_update_input(
                 "ENTER DOCTOR NAME",
@@ -368,8 +369,8 @@ class DoctorMenu:
                 phone,
                 email,
                 address,
-                consultation_fee
-
+                consultation_fee,
+                doctor.doctor_status
             )
 
             print("\n==========================================")
