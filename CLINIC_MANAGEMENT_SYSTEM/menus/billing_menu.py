@@ -187,7 +187,59 @@ class BillingMenu:
             except Exception as e:
 
                 print("ERROR:",e)
-            
+
+    @staticmethod
+    def display_bills(
+        bills,
+        title
+    ):
+
+        if not bills:
+
+            print(
+                f"NO {title.upper()} FOUND"
+            )
+
+            return
+
+        print("\n====================================================================================================")
+        print(
+            f"{title.center(100)}"
+        )
+        print("====================================================================================================")
+
+        print(
+
+            f"{'BILL ID':<12}"
+            f"{'CONSULT ID':<15}"
+            f"{'TOTAL':<15}"
+            f"{'STATUS':<15}"
+
+        )
+
+        print(
+
+            "=" * 60
+
+        )
+
+        for bill in bills:
+
+            print(
+
+                f"{bill.bill_id:<12}"
+                f"{bill.consultation_id:<15}"
+                f"{bill.total_amount:<15.2f}"
+                f"{bill.bill_status:<15}"
+
+            )
+
+        print(
+
+            "=" * 60
+
+        )
+
     @staticmethod
     def view_all_bills():
 
@@ -656,10 +708,53 @@ class BillingMenu:
                 "============================================================"
             )
             
-            payment_mode = InputHelper.get_choice(
-                "ENTER PAYMENT MODE (CASH/UPI/CARD): ",
-                ["CASH", "UPI", "CARD"]
+            print(
+                "\n=========================================="
             )
+
+            print(
+                "            PAYMENT MODE"
+            )
+
+            print(
+                "=========================================="
+            )
+
+            print(
+                "1. CASH"
+            )
+
+            print(
+                "2. UPI"
+            )
+
+            print(
+                "3. CARD"
+            )
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                payment_mode = "CASH"
+
+            elif choice == "2":
+
+                payment_mode = "UPI"
+
+            elif choice == "3":
+
+                payment_mode = "CARD"
+
+            else:
+
+                print(
+                    "INVALID CHOICE"
+                )
+
+                return
 
             transaction_reference = None
 

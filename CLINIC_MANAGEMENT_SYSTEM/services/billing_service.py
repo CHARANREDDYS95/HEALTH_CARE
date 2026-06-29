@@ -13,6 +13,8 @@ from models.appointment_master import AppointmentMaster
 from models.doctor_master import DoctorMaster
 from models.doctor_availability import DoctorAvailability
 from models.patient_master import PatientMaster
+from decimal import Decimal
+
 
 class BillingService:
 
@@ -21,6 +23,7 @@ class BillingService:
         consultation_id,
         discount_amount
     ):
+
         validate_required(
             consultation_id,
             "Consultation ID"
@@ -46,11 +49,13 @@ class BillingService:
             ).scalar_one_or_none()
 
             if not consultation:
+
                 raise ValueError(
                     "CONSULTATION NOT FOUND"
                 )
 
             if consultation.consultation_status != "COMPLETED":
+
                 raise ValueError(
                     "CONSULTATION NOT COMPLETED"
                 )
@@ -65,6 +70,7 @@ class BillingService:
             ).scalar_one_or_none()
 
             if existing_bill:
+
                 raise ValueError(
                     "BILL ALREADY GENERATED"
                 )
@@ -77,7 +83,7 @@ class BillingService:
                     == consultation.appointment_id
                 )
             ).scalar_one_or_none()
-                    
+
             if not appointment:
 
                 raise ValueError(
@@ -98,7 +104,7 @@ class BillingService:
                 raise ValueError(
                     "DOCTOR AVAILABILITY NOT FOUND"
                 )
-                    
+
             doctor = session.execute(
                 select(
                     DoctorMaster
@@ -113,38 +119,57 @@ class BillingService:
                 raise ValueError(
                     "DOCTOR NOT FOUND"
                 )
-                    
+
             consultation_fee = (
                 doctor.consultation_fee
             )
 
-            consultation_fee = (
-                doctor.consultation_fee
+            discount_amount = Decimal(
+
+                str(
+                    discount_amount
+                )
+
             )
 
             taxable_amount = (
+
                 consultation_fee
+
                 - discount_amount
+
             )
 
-            tax_amount = round(
+            tax_amount = (
 
                 taxable_amount
-                * 0.18,
 
-                2
+                * Decimal(
+                    "0.18"
+                )
+
+            ).quantize(
+
+                Decimal(
+                    "0.01"
+                )
 
             )
 
-            total_amount = round(
+            total_amount = (
 
                 taxable_amount
-                + tax_amount,
 
-                2
+                + tax_amount
+
+            ).quantize(
+
+                Decimal(
+                    "0.01"
+                )
 
             )
-            
+
             if total_amount <= 0:
 
                 raise ValueError(
@@ -158,6 +183,7 @@ class BillingService:
             )
 
             bill = BillingMaster(
+
                 bill_id=bill_id,
                 consultation_id=consultation_id,
                 consultation_fee=consultation_fee,
@@ -166,6 +192,7 @@ class BillingService:
                 total_amount=total_amount,
                 bill_date=date.today(),
                 bill_status="UNPAID"
+
             )
 
             session.add(
@@ -177,10 +204,13 @@ class BillingService:
             return bill_id
 
         except Exception:
+
             session.rollback()
+
             raise
 
         finally:
+
             session.close()
             
     @staticmethod
@@ -274,26 +304,49 @@ class BillingService:
                 doctor.consultation_fee
             )
 
+            discount_amount = Decimal(
+
+                str(
+                    discount_amount
+                )
+
+            )
+
             taxable_amount = (
+
                 consultation_fee
+
                 - discount_amount
-            )
-
-            tax_amount = round(
-
-                taxable_amount
-                * 0.18,
-
-                2
 
             )
 
-            total_amount = round(
+            tax_amount = (
 
                 taxable_amount
-                + tax_amount,
 
-                2
+                * Decimal(
+                    "0.18"
+                )
+
+            ).quantize(
+
+                Decimal(
+                    "0.01"
+                )
+
+            )
+
+            total_amount = (
+
+                taxable_amount
+
+                + tax_amount
+
+            ).quantize(
+
+                Decimal(
+                    "0.01"
+                )
 
             )
 
@@ -337,7 +390,6 @@ class BillingService:
         finally:
 
             session.close()
-            
     @staticmethod
     def search_bill_by_id(
         bill_id
@@ -470,7 +522,7 @@ class BillingService:
             payment_id = generate_id(
                 "PAYMENT_MASTER",
                 "PAYMENT_ID",
-                "PAY"
+                "PY"
             )
 
             payment = PaymentMaster(

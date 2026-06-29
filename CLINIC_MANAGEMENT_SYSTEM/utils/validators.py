@@ -34,10 +34,33 @@ def validate_status(status):
         raise ValueError("Status must be ACTIVE or INACTIVE")
 
 
-def validate_positive_number(value, field_name):
-    if value is None or value <= 0:
-        raise ValueError(f"{field_name} must be greater than 0")
+def validate_positive_number(
+    value,
+    field_name,
+    allow_zero=False
+):
 
+    if value is None:
+
+        raise ValueError(
+            f"{field_name} CANNOT BE EMPTY"
+        )
+
+    if allow_zero:
+
+        if value < 0:
+
+            raise ValueError(
+                f"{field_name} CANNOT BE NEGATIVE"
+            )
+
+    else:
+
+        if value <= 0:
+
+            raise ValueError(
+                f"{field_name} MUST BE GREATER THAN 0"
+            )
 
 def validate_date_not_future(input_date):
     if input_date > date.today():

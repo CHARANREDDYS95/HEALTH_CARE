@@ -1,0 +1,42 @@
+[
+    {
+        "Doctor ID": "D001",
+        "Doctor Name": "Dr. Ramesh",
+        "Appointment Count": 9
+    },
+    {
+        "Doctor ID": "D002",
+        "Doctor Name": "Dr. Priya",
+        "Appointment Count": 6
+    },
+    {
+        "Doctor ID": "D003",
+        "Doctor Name": "Dr. Rajesh Kumar",
+        "Appointment Count": 6
+    },
+    {
+        "Doctor ID": "D004",
+        "Doctor Name": "Dr. Anjali",
+        "Appointment Count": 6
+    },
+    {
+        "Doctor ID": "D005",
+        "Doctor Name": "Dr. Naveen",
+        "Appointment Count": 6
+    },
+    {
+        "Doctor ID": "D006",
+        "Doctor Name": "Dr. Kavitha",
+        "Appointment Count": 6
+    },
+    {
+        "Doctor ID": "D007",
+        "Doctor Name": "Dr. Srinivas",
+        "Appointment Count": 6
+    },
+    {
+        "Doctor ID": "D008",
+        "Doctor Name": "Dr. Swathi",
+        "Appointment Count": 6
+    }
+]
