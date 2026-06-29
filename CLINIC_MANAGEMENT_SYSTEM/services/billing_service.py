@@ -12,14 +12,14 @@ from models.payment_master import PaymentMaster
 from models.appointment_master import AppointmentMaster
 from models.doctor_master import DoctorMaster
 from models.doctor_availability import DoctorAvailability
+from models.patient_master import PatientMaster
 
 class BillingService:
 
     @staticmethod
     def generate_bill(
         consultation_id,
-        discount_amount,
-        tax_amount
+        discount_amount
     ):
         validate_required(
             consultation_id,
@@ -32,11 +32,6 @@ class BillingService:
             allow_zero=True
         )
 
-        validate_positive_number(
-            tax_amount,
-            "Tax Amount",
-            allow_zero=True
-        )
         session = get_session()
 
         try:
@@ -123,10 +118,31 @@ class BillingService:
                 doctor.consultation_fee
             )
 
-            total_amount = (
+            consultation_fee = (
+                doctor.consultation_fee
+            )
+
+            taxable_amount = (
                 consultation_fee
                 - discount_amount
-                + tax_amount
+            )
+
+            tax_amount = round(
+
+                taxable_amount
+                * 0.18,
+
+                2
+
+            )
+
+            total_amount = round(
+
+                taxable_amount
+                + tax_amount,
+
+                2
+
             )
             
             if total_amount <= 0:
@@ -165,6 +181,161 @@ class BillingService:
             raise
 
         finally:
+            session.close()
+            
+    @staticmethod
+    def calculate_bill(
+        consultation_id,
+        discount_amount
+    ):
+
+        validate_required(
+            consultation_id,
+            "Consultation ID"
+        )
+
+        validate_positive_number(
+            discount_amount,
+            "Discount Amount",
+            allow_zero=True
+        )
+
+        session = get_session()
+
+        try:
+
+            consultation = session.execute(
+                select(
+                    ConsultationMaster
+                ).where(
+                    ConsultationMaster.consultation_id
+                    == consultation_id
+                )
+            ).scalar_one_or_none()
+
+            if not consultation:
+
+                raise ValueError(
+                    "CONSULTATION NOT FOUND"
+                )
+
+            if consultation.consultation_status != "COMPLETED":
+
+                raise ValueError(
+                    "CONSULTATION NOT COMPLETED"
+                )
+
+            appointment = session.execute(
+                select(
+                    AppointmentMaster
+                ).where(
+                    AppointmentMaster.appointment_id
+                    == consultation.appointment_id
+                )
+            ).scalar_one_or_none()
+
+            if not appointment:
+
+                raise ValueError(
+                    "APPOINTMENT NOT FOUND"
+                )
+
+            availability = session.execute(
+                select(
+                    DoctorAvailability
+                ).where(
+                    DoctorAvailability.availability_id
+                    == appointment.availability_id
+                )
+            ).scalar_one_or_none()
+
+            if not availability:
+
+                raise ValueError(
+                    "DOCTOR AVAILABILITY NOT FOUND"
+                )
+
+            doctor = session.execute(
+                select(
+                    DoctorMaster
+                ).where(
+                    DoctorMaster.doctor_id
+                    == availability.doctor_id
+                )
+            ).scalar_one_or_none()
+
+            if not doctor:
+
+                raise ValueError(
+                    "DOCTOR NOT FOUND"
+                )
+
+            consultation_fee = (
+                doctor.consultation_fee
+            )
+
+            taxable_amount = (
+                consultation_fee
+                - discount_amount
+            )
+
+            tax_amount = round(
+
+                taxable_amount
+                * 0.18,
+
+                2
+
+            )
+
+            total_amount = round(
+
+                taxable_amount
+                + tax_amount,
+
+                2
+
+            )
+
+            if total_amount <= 0:
+
+                raise ValueError(
+                    "TOTAL BILL AMOUNT MUST BE GREATER THAN ZERO"
+                )
+
+            patient = session.execute(
+                select(
+                    PatientMaster
+                ).where(
+                    PatientMaster.patient_id
+                    == appointment.patient_id
+                )
+            ).scalar_one_or_none()
+
+            return {
+
+                "consultation_id": consultation.consultation_id,
+
+                "appointment_id": appointment.appointment_id,
+
+                "patient_id": patient.patient_id,
+
+                "patient_name": patient.patient_name,
+
+                "doctor_name": doctor.doctor_name,
+
+                "consultation_fee": consultation_fee,
+
+                "discount_amount": discount_amount,
+
+                "tax_amount": tax_amount,
+
+                "total_amount": total_amount
+
+            }
+
+        finally:
+
             session.close()
             
     @staticmethod
@@ -335,12 +506,17 @@ class BillingService:
         try:
 
             bills = session.execute(
+
                 select(
+
                     BillingMaster
-                )
-                .order_by(
+
+                ).order_by(
+
                     BillingMaster.bill_id
+
                 )
+
             ).scalars().all()
 
             return bills
