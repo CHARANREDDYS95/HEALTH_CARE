@@ -364,6 +364,7 @@ class InputHelper:
             print(
                 "INVALID CHOICE"
             )
+
     @staticmethod
     def get_time(message):
 
@@ -377,7 +378,7 @@ class InputHelper:
 
                 datetime.strptime(
                     value,
-                    "%H:%M"
+                    "%I:%M %p"
                 )
 
                 return value
@@ -385,7 +386,7 @@ class InputHelper:
             except ValueError:
 
                 print(
-                    "ENTER TIME AS HH:MM (24-HOUR FORMAT)"
+                    "ENTER TIME AS HH:MM AM/PM"
                 )
 
     @staticmethod
@@ -414,7 +415,7 @@ class InputHelper:
 
                 datetime.strptime(
                     value,
-                    "%H:%M"
+                    "%I:%M %p"
                 )
 
                 return value
@@ -422,7 +423,7 @@ class InputHelper:
             except ValueError:
 
                 print(
-                    "ENTER TIME AS HH:MM (24-HOUR FORMAT)"
+                    "ENTER TIME AS HH:MM AM/PM"
                 )
 
     @staticmethod

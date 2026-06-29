@@ -57,12 +57,12 @@ class SessionService:
 
         new_start = datetime.strptime(
             start_time,
-            "%H:%M"
+            "%I:%M %p"
         )
 
         new_end = datetime.strptime(
             end_time,
-            "%H:%M"
+            "%I:%M %p"
         )
 
         if new_start >= new_end:
@@ -98,12 +98,12 @@ class SessionService:
 
                 existing_start = datetime.strptime(
                     existing.start_time,
-                    "%H:%M"
+                    "%I:%M %p"
                 )
 
                 existing_end = datetime.strptime(
                     existing.end_time,
-                    "%H:%M"
+                    "%I:%M %p"
                 )
 
                 if (
@@ -199,7 +199,11 @@ class SessionService:
         try:
 
             sessions = session.execute(
-                select(SessionMaster)
+                select(
+                    SessionMaster
+                ).order_by(
+                    SessionMaster.session_id
+                )
             ).scalars().all()
 
             return sessions
@@ -252,12 +256,12 @@ class SessionService:
 
         new_start = datetime.strptime(
             start_time,
-            "%H:%M"
+            "%I:%M %p"
         )
 
         new_end = datetime.strptime(
             end_time,
-            "%H:%M"
+            "%I:%M %p"
         )
 
         if new_start >= new_end:
@@ -307,12 +311,12 @@ class SessionService:
 
                 existing_start = datetime.strptime(
                     existing.start_time,
-                    "%H:%M"
+                    "%I:%M %p"
                 )
 
                 existing_end = datetime.strptime(
                     existing.end_time,
-                    "%H:%M"
+                    "%I:%M %p"
                 )
 
                 if (

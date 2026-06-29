@@ -22,12 +22,12 @@ class SessionMenu:
 
             room_id = InputHelper.get_room_choice()
 
-            start_time = InputHelper.get_time(
-                "ENTER START TIME (HH:MM): "
+            start_time = InputHelper.get_input(
+                "ENTER START TIME (HH:MM AM/PM): "
             )
 
-            end_time = InputHelper.get_time(
-                "ENTER END TIME (HH:MM): "
+            end_time = InputHelper.get_input(
+                "ENTER END TIME (HH:MM AM/PM): "
             )
 
             max_patients = InputHelper.get_integer(
@@ -265,12 +265,12 @@ class SessionMenu:
                 return
 
             start_time = InputHelper.get_update_time(
-                "ENTER START TIME",
+                "ENTER START TIME (HH:MM AM/PM)",
                 session.start_time
             )
 
             end_time = InputHelper.get_update_time(
-                "ENTER END TIME",
+                "ENTER END TIME (HH:MM AM/PM)",
                 session.end_time
             )
 

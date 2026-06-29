@@ -83,13 +83,13 @@ def validate_time(value):
 
         datetime.strptime(
             value,
-            "%H:%M"
+            "%I:%M %p"
         )
 
     except ValueError:
 
         raise ValueError(
-            "Time must be in HH:MM (24-hour) format"
+            "TIME MUST BE IN HH:MM AM/PM FORMAT"
         )
 
 def validate_future_date(
