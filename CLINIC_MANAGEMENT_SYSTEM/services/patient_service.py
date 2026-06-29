@@ -113,6 +113,8 @@ class PatientService:
         patient_id
     ):
 
+        patient_id = patient_id.strip().upper()
+
         session = get_session()
 
         try:
@@ -124,7 +126,7 @@ class PatientService:
             ).scalar_one_or_none()
 
             return patient
-
+    
         finally:
             session.close()
         
@@ -174,14 +176,21 @@ class PatientService:
         try:
 
             patients = session.execute(
+
                 select(
                     PatientMaster
                 ).where(
+
                     PatientMaster.patient_status
-                    == "ACTIVE"
+                    ==
+                    "ACTIVE"
+
                 ).order_by(
-                    PatientMaster.patient_name
+
+                    PatientMaster.patient_id
+
                 )
+
             ).scalars().all()
 
             return patients

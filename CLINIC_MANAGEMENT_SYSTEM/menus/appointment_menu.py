@@ -1,4 +1,6 @@
 from services.appointment_service import AppointmentService
+from datetime import date
+
 from utils.input_helper import (
     InputHelper,
     OperationCancelled
@@ -10,7 +12,9 @@ from services.doctor_availability_service import (
 from services.doctor_service import (
     DoctorService
 )
-
+from utils.validators import (
+    validate_appointment_date
+)
 
 class AppointmentMenu:
 
@@ -121,40 +125,107 @@ class AppointmentMenu:
 
             )
 
-            patient_id = InputHelper.get_input(
-                "\nENTER PATIENT ID: "
-            ).strip().upper()
+            print("\n==========================================")
+            print("          PATIENT TYPE")
+            print("==========================================")
+            print("1. EXISTING PATIENT")
+            print("2. NEW PATIENT")
+            print("3. BACK")
 
-            appointment_date = InputHelper.get_date(
-                "ENTER APPOINTMENT DATE (YYYY-MM-DD): "
+            patient_choice = InputHelper.get_input(
+                "ENTER CHOICE: "
             )
+            
+            if patient_choice == "1":
 
-            availability_list = (
-                DoctorAvailabilityService.get_available_by_date(
-                    appointment_date
+                while True:
+
+                    patient_id = InputHelper.get_input(
+                        "\nENTER PATIENT ID: "
+                    ).strip().upper()
+
+                    patient = (
+                        PatientService.search_patient_by_id(
+                            patient_id
+                        )
+                    )
+
+                    if patient:
+
+                        break
+
+                    print()
+
+                    print(
+                        "INVALID PATIENT ID."
+                    )
+
+                    print(
+                        "PLEASE ENTER A VALID PATIENT ID."
+                    )
+
+            elif patient_choice == "2":
+
+                from menus.patient_menu import (
+                    PatientMenu
                 )
-            )
 
-            if not availability_list:
+                patient_id = (
+                    PatientMenu.register_patient()
+                )
+
+                if not patient_id:
+
+                    return
+
+                patient = (
+                    PatientService.search_patient_by_id(
+                        patient_id
+                    )
+                )
+
+            elif patient_choice == "3":
+
+                return
+
+            else:
 
                 print(
-                    "NO DOCTORS AVAILABLE ON THIS DATE"
+                    "INVALID CHOICE"
+                )
+
+                return
+            
+            doctors = (
+                DoctorService.get_active_doctors()
+            )
+
+            if not doctors:
+
+                print(
+                    "NO ACTIVE DOCTORS FOUND"
                 )
 
                 return
 
-            print("\n==========================================")
-            print("      AVAILABLE DOCTORS")
-            print("==========================================")
+            print(
+                "\n========================================================================================="
+            )
+
+            print(
+                "                              ACTIVE DOCTORS"
+            )
+
+            print(
+                "========================================================================================="
+            )
 
             print(
 
-                f"{'AVAILABILITY':<15}"
-                f"{'DOCTOR':<25}"
-                f"{'SESSION':<15}"
-                f"{'ROOM':<10}"
-                f"{'TIME':<22}"
-                f"{'DAY':<12}"
+                f"{'NO.':<5}"
+                f"{'DOCTOR ID':<15}"
+                f"{'DOCTOR NAME':<30}"
+                f"{'SPECIALIZATION':<30}"
 
             )
 
@@ -164,10 +235,518 @@ class AppointmentMenu:
 
             )
 
+            for index, doctor in enumerate(
+
+                doctors,
+
+                start=1
+
+            ):
+
+                print(
+
+                    f"{index:<5}"
+                    f"{doctor.doctor_id:<15}"
+                    f"{doctor.doctor_name:<30}"
+                    f"{doctor.specialization:<30}"
+
+                )
+
+            print(
+
+                "=" * 100
+
+            )
+
+            while True:
+
+                choice = InputHelper.get_integer(
+                    "\nENTER CHOICE: "
+                )
+
+                if (
+
+                    1
+                    <=
+                    choice
+                    <=
+                    len(
+                        doctors
+                    )
+
+                ):
+
+                    doctor = doctors[
+                        choice - 1
+                    ]
+
+                    doctor_id = (
+                        doctor.doctor_id
+                    )
+
+                    break
+
+                print()
+
+                print(
+                    "INVALID CHOICE."
+                )
+
+                print(
+                    "PLEASE SELECT A VALID DOCTOR."
+                )
+                
+            next_dates = (
+                DoctorAvailabilityService.get_next_available_dates(
+                    doctor_id
+                )
+            )
+
+            print(
+                "\n============================================================"
+            )
+
+            print(
+                "                NEXT AVAILABLE DATES"
+            )
+
+            print(
+                "============================================================"
+            )
+
+            print(
+
+                f"{'NO.':<6}"
+                f"{'DATE':<15}"
+                f"{'DAY':<15}"
+
+            )
+
+            print(
+                "=" * 40
+            )
+
+            for index, available_date in enumerate(
+
+                next_dates,
+
+                start=1
+
+            ):
+
+                print(
+
+                    f"{index:<6}"
+                    f"{str(available_date):<15}"
+                    f"{available_date.strftime('%A').upper():<15}"
+
+                )
+
+            print(
+                "=" * 40
+            )
+
+            print()
+
+            print(
+                f"{len(next_dates) + 1}. ENTER ANOTHER DATE"
+            )
+
+            print()
+
+            print(
+                "============================================================"
+            )
+
+            while True:
+
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
+                )
+
+                if (
+
+                    choice.isdigit()
+
+                    and
+
+                    1
+                    <=
+                    int(choice)
+                    <=
+                    len(next_dates)
+
+                ):
+
+                    appointment_date = (
+                        next_dates[
+                            int(choice) - 1
+                        ]
+                    )
+
+                    break
+
+                elif choice == str(
+                    len(next_dates) + 1
+                ):
+
+                    while True:
+
+                        try:
+
+                            appointment_date = (
+                                InputHelper.get_date(
+                                    "ENTER APPOINTMENT DATE (YYYY-MM-DD): "
+                                )
+                            )
+
+                            validate_appointment_date(
+                                appointment_date
+                            )
+
+                            available_days = [
+
+                                doctor.available_day
+
+                                for doctor in
+
+                                DoctorAvailabilityService.get_doctor_availability(
+                                    doctor_id
+                                )
+
+                            ]
+
+                            if (
+
+                                appointment_date.strftime(
+                                    "%A"
+                                ).upper()
+
+                                not in
+
+                                available_days
+
+                            ):
+
+                                print()
+
+                                print(
+                                    "DOCTOR IS NOT AVAILABLE ON THE SELECTED DATE."
+                                )
+
+                                print(
+                                    "PLEASE ENTER ANOTHER DATE."
+                                )
+
+                                continue
+
+                            break
+
+                        except ValueError as e:
+
+                            print(
+                                "ERROR:",
+                                e
+                            )
+
+                    break
+
+                else:
+
+                    print(
+                        "INVALID CHOICE."
+                    )
+                
+            availability_list = (
+                DoctorAvailabilityService.get_doctor_sessions_by_date(
+                    doctor_id,
+                    appointment_date
+                )
+            )
+
+            if not availability_list:
+
+                print()
+
+                print(
+                    "NO SESSIONS AVAILABLE."
+                )
+
+                return
+
+            print(
+                "\n============================================================"
+            )
+
+            print(
+                "                  AVAILABLE SESSIONS"
+            )
+
+            print(
+                "============================================================"
+            )
+
+            print(
+
+                f"{'NO.':<5}"
+                f"{'AVAILABILITY ID':<18}"
+                f"{'SESSION':<15}"
+                f"{'ROOM':<10}"
+                f"{'TIME':<25}"
+
+            )
+
+            print(
+
+                "=" * 70
+
+            )
+
+            for index, (
+
+                availability,
+                session_name,
+                room_id,
+                start_time,
+                end_time
+
+            ) in enumerate(
+
+                availability_list,
+
+                start=1
+
+            ):
+
+                print(
+
+                    f"{index:<5}"
+                    f"{availability.availability_id:<18}"
+                    f"{session_name:<15}"
+                    f"{room_id:<10}"
+                    f"{str(start_time) + ' - ' + str(end_time):<25}"
+
+                )
+
+            print(
+
+                "=" * 70
+
+            )
+
+            while True:
+
+                choice = InputHelper.get_integer(
+                    "\nENTER CHOICE: "
+                )
+
+                if (
+
+                    1
+                    <=
+                    choice
+                    <=
+                    len(
+                        availability_list
+                    )
+
+                ):
+
+                    availability_id = (
+
+                        availability_list[
+                            choice - 1
+                        ][0].availability_id
+
+                    )
+
+                    break
+
+                print()
+
+                print(
+                    "INVALID CHOICE."
+                )
+
+                print(
+                    "PLEASE SELECT A VALID SESSION."
+                )
+
+               
+            tokens = (
+                AppointmentService.get_session_tokens(
+                    availability_id,
+                    appointment_date
+                )
+            )
+
+            print("\n========================================================")
+            print("              SESSION TOKEN STATUS")
+            print("========================================================")
+
+            print(
+
+                f"{'TOKEN NO.':<12}"
+                f"{'CONSULTATION TIME':<22}"
+                f"{'STATUS':<12}"
+
+            )
+
+            print(
+
+                "=" * 50
+
+            )
+
+            for (
+
+                token,
+                consultation_time,
+                status
+
+            ) in tokens:
+
+                print(
+
+                    f"{token:<12}"
+                    f"{consultation_time:<22}"
+                    f"{status:<12}"
+
+                )
+
+            print(
+
+                "=" * 50
+
+            )
+
+            available_tokens = [
+
+                str(token)
+
+                for (
+
+                    token,
+                    consultation_time,
+                    status
+
+                ) in tokens
+
+                if status == "AVAILABLE"
+
+            ]
+            
+            if not available_tokens:
+
+                print(
+                    "\n============================================================"
+                )
+                print(
+                    "        NO TOKENS AVAILABLE FOR THIS SESSION"
+                )
+                print(
+                    "============================================================"
+                )
+                print(
+                    "PLEASE SELECT ANOTHER DOCTOR OR APPOINTMENT DATE."
+                )
+                print(
+                    "============================================================"
+                )
+                return
+            print()
+
+            print(
+
+                "AVAILABLE TOKENS :",
+
+                ", ".join(
+                    available_tokens
+                )
+
+            )
+
+            print()
+
+            print(
+
+                "=" * 50
+
+            )
+
+            while True:
+
+                token_no = InputHelper.get_integer(
+                    "ENTER TOKEN NUMBER: "
+                )
+
+                selected_token = None
+
+                for (
+
+                    token,
+                    consultation_time,
+                    status
+
+                ) in tokens:
+
+                    if token == token_no:
+
+                        selected_token = (
+                            token,
+                            consultation_time,
+                            status
+                        )
+
+                        break
+
+                if selected_token is None:
+
+                    print(
+                        "\nINVALID TOKEN NUMBER."
+                    )
+
+                    print(
+                        "AVAILABLE TOKENS :",
+                        ", ".join(
+                            available_tokens
+                        )
+                    )
+
+                    continue
+
+                if selected_token[2] == "BOOKED":
+
+                    print(
+                        f"\nTOKEN {token_no} IS ALREADY BOOKED."
+                    )
+
+                    print(
+                        "PLEASE SELECT AN AVAILABLE TOKEN."
+                    )
+
+                    print()
+
+                    print(
+                        "AVAILABLE TOKENS :",
+                        ", ".join(
+                            available_tokens
+                        )
+                    )
+
+                    continue
+
+                break
+
+            reason_for_visit = InputHelper.get_input(
+                "ENTER REASON FOR VISIT: "
+            )
+
+            selected_availability = None
+
             for (
 
                 availability,
-                doctor_name,
                 session_name,
                 room_id,
                 start_time,
@@ -175,37 +754,113 @@ class AppointmentMenu:
 
             ) in availability_list:
 
-                print(
+                if (
 
-                    f"{availability.availability_id:<15}"
-                    f"{doctor_name:<25}"
-                    f"{session_name:<15}"
-                    f"{room_id:<10}"
-                    f"{str(start_time) + ' - ' + str(end_time):<22}"
-                    f"{availability.available_day:<12}"
+                    availability.availability_id
+                    ==
+                    availability_id
 
-                )
+                ):
+
+                    selected_availability = (
+
+                        session_name,
+                        room_id
+
+                    )
+
+                    break
+
+            consultation_time = ""
+
+            for (
+
+                token,
+                time,
+                status
+
+            ) in tokens:
+
+                if token == token_no:
+
+                    consultation_time = time
+
+                    break
 
             print(
-
-                "=" * 100
-
+                "\n============================================================"
             )
 
-            availability_id = InputHelper.get_input(
-                "\nENTER AVAILABILITY ID: "
-            ).strip().upper()
+            print(
+                "                 CONFIRM APPOINTMENT"
+            )
 
-            reason_for_visit = InputHelper.get_input(
-                "ENTER REASON FOR VISIT: "
+            print(
+                "============================================================"
+            )
+
+            print(
+                f"Patient ID         : {patient.patient_id}"
+            )
+
+            print(
+                f"Patient Name       : {patient.patient_name}"
+            )
+
+            print()
+
+            print(
+                f"Doctor ID          : {doctor.doctor_id}"
+            )
+
+            print(
+                f"Doctor Name        : {doctor.doctor_name}"
+            )
+
+            print(
+                f"Specialization     : {doctor.specialization}"
+            )
+
+            print()
+
+            print(
+                f"Appointment Date   : {appointment_date}"
+            )
+
+            print(
+                f"Session            : {selected_availability[0]}"
+            )
+
+            print(
+                f"Room               : {selected_availability[1]}"
+            )
+
+            print(
+                f"Consultation Time  : {consultation_time}"
+            )
+
+            print(
+                f"Token Number       : {token_no}"
+            )
+
+            print()
+
+            print(
+                f"Reason For Visit   : {reason_for_visit}"
+            )
+
+            print(
+                "============================================================"
             )
 
             confirm = InputHelper.get_confirmation()
 
             if confirm != "Y":
 
+                print()
+
                 print(
-                    "BOOKING CANCELLED"
+                    "BOOKING CANCELLED."
                 )
 
                 return
@@ -219,16 +874,119 @@ class AppointmentMenu:
                 )
             )
 
-            print("\n==========================================")
-            print("APPOINTMENT BOOKED SUCCESSFULLY")
-            print("==========================================")
+            selected_availability = None
+
+            for (
+
+                availability,
+                session_name,
+                room_id,
+                start_time,
+                end_time
+
+            ) in availability_list:
+
+                if (
+
+                    availability.availability_id
+                    ==
+                    availability_id
+
+                ):
+
+                    selected_availability = (
+
+                        session_name,
+                        room_id
+
+                    )
+
+                    break
+
+            consultation_time = ""
+
+            for (
+
+                token,
+                time,
+                status
+
+            ) in tokens:
+
+                if token == token_no:
+
+                    consultation_time = time
+
+                    break
+
             print(
-                "APPOINTMENT ID :",
-                appointment_id
+                "\n============================================================"
             )
+
             print(
-                "TOKEN NUMBER   :",
-                token_no
+                "           APPOINTMENT BOOKED SUCCESSFULLY"
+            )
+
+            print(
+                "============================================================"
+            )
+
+            print(
+                f"Appointment ID     : {appointment_id}"
+            )
+
+            print(
+                f"Booked On          : {date.today()}"
+            )
+
+            print()
+
+            print(
+                f"Patient ID         : {patient.patient_id}"
+            )
+
+            print(
+                f"Patient Name       : {patient.patient_name}"
+            )
+
+            print()
+
+            print(
+                f"Doctor             : {doctor.doctor_name}"
+            )
+
+            print(
+                f"Session            : {selected_availability[0]}"
+            )
+
+            print(
+                f"Room               : {selected_availability[1]}"
+            )
+            print()
+
+            print(
+                f"Appointment Date   : {appointment_date}"
+            )
+
+            print(
+                f"Consultation Time  : {consultation_time}"
+            )
+
+            print(
+                f"Token Number       : {token_no}"
+            )
+
+            print(
+                f"Reason For Visit   : {reason_for_visit}"
+            )
+
+            print(
+                "Status             : BOOKED"
+            )
+            print()
+
+            print(
+                "============================================================"
             )
 
         except OperationCancelled as e:
@@ -266,9 +1024,29 @@ class AppointmentMenu:
 
                 if choice == "1":
 
-                    appointment_id = InputHelper.get_input(
-                        "ENTER APPOINTMENT ID: "
-                    ).strip().upper()
+                    while True:
+
+                        appointment_id = InputHelper.get_input(
+                            "\nENTER APPOINTMENT ID (Ex: A001): "
+                        ).strip().upper()
+
+                    if not appointment_id.startswith(
+                        "A"
+                    ):
+
+                        print()
+
+                        print(
+                            "INVALID APPOINTMENT ID."
+                        )
+
+                        print(
+                            "PLEASE ENTER A VALID APPOINTMENT ID."
+                        )
+
+                        continue
+
+                    break
 
                     appointment = (
                         AppointmentService.search_appointment_by_id(
@@ -371,6 +1149,20 @@ class AppointmentMenu:
                         "\nENTER PATIENT ID: "
 
                     ).strip().upper()
+
+                    patient = (
+                        PatientService.search_patient_by_id(
+                            patient_id
+                        )
+                    )
+
+                    if not patient:
+
+                        print(
+                            "PATIENT NOT FOUND"
+                        )
+
+                        continue
 
                     appointments = (
 
@@ -481,6 +1273,20 @@ class AppointmentMenu:
                         "\nENTER DOCTOR ID: "
 
                     ).strip().upper()
+
+                    doctor = (
+                        DoctorService.search_doctor_by_id(
+                            doctor_id
+                        )
+                    )
+
+                    if not doctor:
+
+                        print(
+                            "DOCTOR NOT FOUND"
+                        )
+
+                        continue
 
                     appointments = (
 
@@ -790,6 +1596,12 @@ class AppointmentMenu:
             print("\n==========================================")
             print("      CURRENT APPOINTMENT")
             print("==========================================")
+            
+
+            print("\n============================================================")
+            print("LEAVE THE FIELD EMPTY AND PRESS ENTER TO KEEP THE CURRENT VALUE")
+            print("TYPE A NEW VALUE AND PRESS ENTER TO UPDATE THE FIELD")
+            print("============================================================")
             print(
                 "PATIENT ID       :",
                 appointment.patient_id
@@ -811,10 +1623,29 @@ class AppointmentMenu:
                 appointment.reason_for_visit
             )
 
-            appointment_date = InputHelper.get_update_date(
-                "ENTER APPOINTMENT DATE",
-                appointment.appointment_date
-            )
+            while True:
+
+                try:
+
+                    appointment_date = (
+                        InputHelper.get_update_date(
+                            "ENTER APPOINTMENT DATE",
+                            appointment.appointment_date
+                        )
+                    )
+
+                    validate_appointment_date(
+                        appointment_date
+                    )
+
+                    break
+
+                except ValueError as e:
+
+                    print(
+                        "ERROR:",
+                        e
+                    )
 
             availability_list = (
                 DoctorAvailabilityService.get_available_by_date(
@@ -907,7 +1738,43 @@ class AppointmentMenu:
             )
 
             print(
-                "APPOINTMENT UPDATED SUCCESSFULLY"
+                "\n============================================================"
+            )
+
+            print(
+                "          APPOINTMENT UPDATED SUCCESSFULLY"
+            )
+
+            print(
+                "============================================================"
+            )
+
+            print(
+                f"Appointment ID    : {appointment_id}"
+            )
+
+            print(
+                f"Patient ID        : {appointment.patient_id}"
+            )
+
+            print(
+                f"Availability ID   : {availability_id}"
+            )
+
+            print(
+                f"Appointment Date  : {appointment_date}"
+            )
+
+            print(
+                f"Token Number      : {appointment.token_no}"
+            )
+
+            print(
+                f"Reason For Visit  : {reason_for_visit}"
+            )
+
+            print(
+                "============================================================"
             )
 
         except OperationCancelled as e:
@@ -1047,12 +1914,15 @@ class AppointmentMenu:
                 appointment.reason_for_visit
             )
 
+            
             confirm = InputHelper.get_confirmation()
 
             if confirm != "Y":
 
+                print()
+
                 print(
-                    "CANCELLATION ABORTED"
+                    "UPDATE CANCELLED."
                 )
 
                 return
@@ -1061,9 +1931,45 @@ class AppointmentMenu:
                 appointment_id
             )
 
-            print("\n==========================================")
-            print("APPOINTMENT CANCELLED SUCCESSFULLY")
-            print("==========================================")
+            print(
+                "\n============================================================"
+            )
+
+            print(
+                "        APPOINTMENT CANCELLED SUCCESSFULLY"
+            )
+
+            print(
+                "============================================================"
+            )
+
+            print(
+                f"Appointment ID    : {appointment.appointment_id}"
+            )
+
+            print(
+                f"Patient ID        : {appointment.patient_id}"
+            )
+
+            print(
+                f"Availability ID   : {appointment.availability_id}"
+            )
+
+            print(
+                f"Appointment Date  : {appointment.appointment_date}"
+            )
+
+            print(
+                f"Token Number      : {appointment.token_no}"
+            )
+
+            print(
+                "Status            : CANCELLED"
+            )
+
+            print(
+                "============================================================"
+            )
 
         except OperationCancelled as e:
 

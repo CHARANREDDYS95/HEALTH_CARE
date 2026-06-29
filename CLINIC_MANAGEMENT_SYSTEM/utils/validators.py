@@ -186,3 +186,13 @@ def parse_date(
     raise ValueError(
         f"INVALID DATE FORMAT : {date_value}"
     )
+    
+def validate_appointment_date(
+    appointment_date
+):
+
+    if appointment_date < date.today():
+
+        raise ValueError(
+            "APPOINTMENT DATE CANNOT BE IN THE PAST"
+        )

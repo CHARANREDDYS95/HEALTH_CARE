@@ -94,6 +94,8 @@ class PatientMenu:
             )
 
             print("==========================================")
+
+            return patient_id
         
         except OperationCancelled as e:
 

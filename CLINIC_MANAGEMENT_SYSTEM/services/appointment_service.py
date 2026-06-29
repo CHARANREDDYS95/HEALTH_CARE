@@ -11,6 +11,7 @@ from models.patient_master import PatientMaster
 from models.doctor_availability import DoctorAvailability
 from models.doctor_master import DoctorMaster
 from models.session_master import SessionMaster
+from datetime import datetime, timedelta
 
 class AppointmentService:
 
@@ -19,6 +20,7 @@ class AppointmentService:
         patient_id,
         availability_id,
         appointment_date,
+        token_no,
         reason_for_visit
     ):
 
@@ -117,26 +119,40 @@ class AppointmentService:
                 raise ValueError(
                     "DOCTOR IS NOT AVAILABLE ON THE SELECTED DATE"
                 )
-            booked_count = session.execute(
+
+            if (
+                token_no < 1
+                or
+                token_no > availability.max_patients
+            ):
+
+                raise ValueError(
+                    "INVALID TOKEN NUMBER"
+                )
+
+            token_exists = session.execute(
                 select(
-                    func.count()
+                    AppointmentMaster
                 ).where(
                     AppointmentMaster.availability_id
                     == availability_id,
+
                     AppointmentMaster.appointment_date
                     == appointment_date,
+
+                    AppointmentMaster.token_no
+                    == token_no,
+
                     AppointmentMaster.appointment_status
                     == "BOOKED"
                 )
-            ).scalar()
+            ).scalar_one_or_none()
 
-            if booked_count >= availability.max_patients:
+            if token_exists:
 
                 raise ValueError(
-                    "SESSION IS FULL"
+                    "TOKEN ALREADY BOOKED"
                 )
-
-            token_no = booked_count + 1
 
             appointment_id = generate_id(
                 "APPOINTMENT_MASTER",
@@ -171,6 +187,188 @@ class AppointmentService:
             session.rollback()
 
             raise
+
+        finally:
+
+            session.close()
+            
+    @staticmethod
+    def get_session_tokens(
+        availability_id,
+        appointment_date
+    ):
+
+        session = get_session()
+
+        try:
+
+            availability = session.execute(
+                select(
+                    DoctorAvailability
+                ).where(
+                    DoctorAvailability.availability_id
+                    == availability_id
+                )
+            ).scalar_one_or_none()
+
+            if not availability:
+
+                raise ValueError(
+                    "DOCTOR AVAILABILITY NOT FOUND"
+                )
+
+            session_master = session.execute(
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.session_id
+                    == availability.session_id
+                )
+            ).scalar_one()
+
+            booked_tokens = session.execute(
+                select(
+                    AppointmentMaster.token_no
+                ).where(
+                    AppointmentMaster.availability_id
+                    == availability_id,
+
+                    AppointmentMaster.appointment_date
+                    == appointment_date,
+
+                    AppointmentMaster.appointment_status
+                    == "BOOKED"
+                )
+            ).scalars().all()
+
+            start_time = datetime.strptime(
+                session_master.start_time,
+                "%I:%M %p"
+            )
+
+            tokens = []
+
+            for token in range(
+                1,
+                session_master.max_patients + 1
+            ):
+
+                consultation_time = (
+                    start_time
+                    +
+                    timedelta(
+                        minutes=(
+                            token - 1
+                        ) * 12
+                    )
+                ).strftime(
+                    "%I:%M %p"
+                )
+
+                status = (
+                    "BOOKED"
+                    if token in booked_tokens
+                    else "AVAILABLE"
+                )
+
+                tokens.append(
+
+                    (
+                        token,
+                        consultation_time,
+                        status
+                    )
+
+                )
+
+            return tokens
+
+        finally:
+
+            session.close()
+            
+    @staticmethod
+    def get_token_status(
+        availability_id,
+        appointment_date
+    ):
+
+        session = get_session()
+
+        try:
+
+            availability = session.execute(
+                select(
+                    DoctorAvailability
+                ).where(
+                    DoctorAvailability.availability_id
+                    == availability_id
+                )
+            ).scalar_one_or_none()
+
+            if not availability:
+
+                raise ValueError(
+                    "DOCTOR AVAILABILITY NOT FOUND"
+                )
+
+            booked_tokens = session.execute(
+                select(
+                    AppointmentMaster.token_no
+                ).where(
+                    AppointmentMaster.availability_id
+                    == availability_id,
+
+                    AppointmentMaster.appointment_date
+                    == appointment_date,
+
+                    AppointmentMaster.appointment_status
+                    == "BOOKED"
+                )
+            ).scalars().all()
+
+            token_status = []
+
+            start_time = datetime.combine(
+                appointment_date,
+                availability.start_time
+            )
+
+            for token in range(
+                1,
+                availability.max_patients + 1
+            ):
+
+                consultation_time = (
+                    start_time
+                    +
+                    timedelta(
+                        minutes=
+                        (
+                            token - 1
+                        )
+                        *
+                        availability.consultation_duration
+                    )
+                ).time()
+
+                status = (
+                    "BOOKED"
+                    if token in booked_tokens
+                    else "AVAILABLE"
+                )
+
+                token_status.append(
+
+                    (
+                        token,
+                        consultation_time,
+                        status
+                    )
+
+                )
+
+            return token_status
 
         finally:
 
@@ -271,15 +469,23 @@ class AppointmentService:
         try:
 
             appointments = session.execute(
+
                 select(
                     AppointmentMaster
                 ).where(
+
                     AppointmentMaster.patient_id
-                    == patient_id
+                    ==
+                    patient_id
+
                 ).order_by(
+
                     AppointmentMaster.appointment_date,
+
                     AppointmentMaster.token_no
+
                 )
+
             ).scalars().all()
 
             return appointments
@@ -331,8 +537,7 @@ class AppointmentService:
                 select(
                     AppointmentMaster
                 ).order_by(
-                    AppointmentMaster.appointment_date,
-                    AppointmentMaster.token_no
+                    AppointmentMaster.appointment_id
                 )
             ).scalars().all()
 

@@ -300,6 +300,37 @@ class DoctorService:
         finally:
 
             session.close()
+            
+    @staticmethod
+    def get_active_doctors():
+
+        session = get_session()
+
+        try:
+
+            doctors = session.execute(
+
+                select(
+                    DoctorMaster
+                ).where(
+
+                    DoctorMaster.doctor_status
+                    ==
+                    "ACTIVE"
+
+                ).order_by(
+
+                    DoctorMaster.doctor_id
+
+                )
+
+            ).scalars().all()
+
+            return doctors
+
+        finally:
+
+            session.close()
 
     @staticmethod
     def change_doctor_status(

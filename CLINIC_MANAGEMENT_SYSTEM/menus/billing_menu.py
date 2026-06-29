@@ -327,15 +327,13 @@ class BillingMenu:
                 "ENTER DISCOUNT AMOUNT: "
             )
 
-            tax_amount = InputHelper.get_float(
-                "ENTER TAX AMOUNT: "
-            )
+
 
             bill_id = (
                 BillingService.generate_bill(
                     consultation_id,
                     discount_amount,
-                    tax_amount
+
                 )
             )
 

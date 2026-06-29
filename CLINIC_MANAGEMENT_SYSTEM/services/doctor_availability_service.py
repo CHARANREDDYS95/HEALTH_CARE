@@ -13,6 +13,7 @@ from utils.validators import (
 from models.doctor_availability import DoctorAvailability
 from models.doctor_master import DoctorMaster
 from models.session_master import SessionMaster
+from datetime import date, timedelta
 
 class DoctorAvailabilityService:
 
@@ -654,7 +655,7 @@ class DoctorAvailabilityService:
                     DoctorAvailability.status
                     == "ACTIVE"
                 ).order_by(
-                    SessionMaster.start_time
+                    SessionMaster.session_id
                 )
             ).all()
 
@@ -663,7 +664,179 @@ class DoctorAvailabilityService:
         finally:
 
             session.close()
-                      
+
+    @staticmethod
+    def get_next_available_dates(
+        doctor_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            availability = session.execute(
+
+                select(
+                    DoctorAvailability
+                ).where(
+                    DoctorAvailability.doctor_id
+                    == doctor_id,
+
+                    DoctorAvailability.status
+                    == "ACTIVE"
+                )
+
+            ).scalars().all()
+
+            if not availability:
+
+                return []
+
+            available_days = [
+
+                doctor.available_day
+
+                for doctor in availability
+
+            ]
+
+            next_dates = []
+
+            current_date = date.today()
+
+            while len(
+                next_dates
+            ) < 3:
+
+                if (
+
+                    current_date.strftime(
+                        "%A"
+                    ).upper()
+
+                    in
+
+                    available_days
+
+                ):
+
+                    next_dates.append(
+                        current_date
+                    )
+
+                current_date += timedelta(
+                    days=1
+                )
+
+            return next_dates
+
+        finally:
+
+            session.close()
+            
+    @staticmethod
+    def get_doctor_availability(
+        doctor_id
+    ):
+
+        session = get_session()
+
+        try:
+
+            availability = session.execute(
+
+                select(
+                    DoctorAvailability
+                ).where(
+
+                    DoctorAvailability.doctor_id
+                    == doctor_id,
+
+                    DoctorAvailability.status
+                    == "ACTIVE"
+
+                ).order_by(
+
+                    DoctorAvailability.available_day,
+
+                    DoctorAvailability.session_id
+
+                )
+
+            ).scalars().all()
+
+            return availability
+
+        finally:
+
+            session.close()
+            
+    @staticmethod
+    def get_doctor_sessions_by_date(
+        doctor_id,
+        appointment_date
+    ):
+
+        session = get_session()
+
+        try:
+
+            available_day = (
+                appointment_date.strftime(
+                    "%A"
+                ).upper()
+            )
+
+            sessions = session.execute(
+
+                select(
+
+                    DoctorAvailability,
+
+                    SessionMaster.session_name,
+
+                    SessionMaster.room_id,
+
+                    SessionMaster.start_time,
+
+                    SessionMaster.end_time
+
+                ).join(
+
+                    SessionMaster,
+
+                    DoctorAvailability.session_id
+                    ==
+                    SessionMaster.session_id
+
+                ).where(
+
+                    DoctorAvailability.doctor_id
+                    ==
+                    doctor_id,
+
+                    DoctorAvailability.available_day
+                    ==
+                    available_day,
+
+                    DoctorAvailability.status
+                    ==
+                    "ACTIVE"
+
+                ).order_by(
+
+                    SessionMaster.start_time
+
+                )
+
+            ).all()
+
+            return sessions
+
+        finally:
+
+            session.close()
+            
     @staticmethod
     def get_doctor_schedule(
         doctor_id
