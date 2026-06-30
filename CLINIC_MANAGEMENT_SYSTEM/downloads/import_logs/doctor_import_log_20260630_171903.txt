@@ -1,0 +1,17 @@
+============================================================
+DOCTOR IMPORT LOG
+============================================================
+
+FILE : Patient_Import_10_Records_With_ID.xlsx
+
+ROW 1 : DATE CANNOT BE EMPTY
+ROW 2 : DATE CANNOT BE EMPTY
+ROW 3 : DATE CANNOT BE EMPTY
+ROW 4 : DATE CANNOT BE EMPTY
+ROW 5 : DATE CANNOT BE EMPTY
+ROW 6 : DATE CANNOT BE EMPTY
+ROW 7 : DATE CANNOT BE EMPTY
+ROW 8 : DATE CANNOT BE EMPTY
+ROW 9 : DATE CANNOT BE EMPTY
+ROW 10 : DATE CANNOT BE EMPTY
+

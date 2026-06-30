@@ -11,7 +11,11 @@ from utils.validators import (
     validate_blood_group,
     validate_date_not_future)
 from utils.date_utils import (DateUtils)
-from utils.id_generator import generate_id
+from utils.id_generator import (
+    generate_id,
+    get_next_id
+)
+
 
 
 
@@ -40,7 +44,8 @@ class ImportExportService:
     @staticmethod
     def _import_patient_record(
         record,
-        session
+        session,
+        patient_id
     ):
 
         record = {
@@ -163,11 +168,7 @@ class ImportExportService:
         
         patient = PatientMaster(
 
-            patient_id=generate_id(
-                "PATIENT_MASTER",
-                "PATIENT_ID",
-                "P"
-            ),
+            patient_id=patient_id,
 
             patient_name=patient_name,
 
@@ -206,7 +207,8 @@ class ImportExportService:
     @staticmethod
     def _import_doctor_record(
         record,
-        session
+        session,
+        doctor_id
     ):
 
         record = {
@@ -387,11 +389,7 @@ class ImportExportService:
 
         doctor = DoctorMaster(
 
-            doctor_id=generate_id(
-                "DOCTOR_MASTER",
-                "DOCTOR_ID",
-                "D"
-            ),
+            doctor_id=doctor_id,
 
             doctor_name=doctor_name,
 
@@ -494,19 +492,44 @@ class ImportExportService:
             total = len(
                 records
             )
+            
+            next_patient_number = None
 
             for index, record in enumerate(
                 records,
                 start=1
             ):
+            
+                
 
                 try:
 
                     with session.begin_nested():
 
+                        patient_id, next_patient_number = (
+
+                            get_next_id(
+
+                                "PATIENT_MASTER",
+
+                                "PATIENT_ID",
+
+                                "P",
+
+                                next_patient_number
+
+                            )
+
+                        )
+
                         ImportExportService._import_patient_record(
+
                             record,
-                            session
+
+                            session,
+
+                            patient_id
+
                         )
 
                         session.flush()
@@ -523,13 +546,15 @@ class ImportExportService:
 
                     )
 
-                except Exception:
+                except Exception as e:
+
+                    session.rollback()
 
                     skipped += 1
 
                     errors.append(
 
-                        f"ROW {index} : DATABASE ERROR"
+                        f"ROW {index} : {str(e)}"
 
                     )
 
@@ -622,6 +647,8 @@ class ImportExportService:
             total = len(
                 records
             )
+            
+            next_doctor_number = None
 
             for index, record in enumerate(
                 records,
@@ -632,9 +659,30 @@ class ImportExportService:
 
                     with session.begin_nested():
 
+                        doctor_id, next_doctor_number = (
+
+                            get_next_id(
+
+                                "DOCTOR_MASTER",
+
+                                "DOCTOR_ID",
+
+                                "D",
+
+                                next_doctor_number
+
+                            )
+
+                        )
+
                         ImportExportService._import_doctor_record(
+
                             record,
-                            session
+
+                            session,
+
+                            doctor_id
+
                         )
 
                         session.flush()
@@ -651,13 +699,15 @@ class ImportExportService:
 
                     )
 
-                except Exception:
+                except Exception as e:
+
+                    session.rollback()
 
                     skipped += 1
 
                     errors.append(
 
-                        f"ROW {index} : DATABASE ERROR"
+                        f"ROW {index} : {str(e)}"
 
                     )
 
@@ -699,9 +749,17 @@ class ImportExportService:
         try:
 
             patients = session.execute(
+
                 select(
+
                     PatientMaster
+
+                ).order_by(
+
+                    PatientMaster.patient_id
+
                 )
+
             ).scalars().all()
 
             records = []
@@ -851,9 +909,17 @@ class ImportExportService:
         try:
 
             doctors = session.execute(
+
                 select(
+
                     DoctorMaster
+
+                ).order_by(
+
+                    DoctorMaster.doctor_id
+
                 )
+
             ).scalars().all()
 
             records = []

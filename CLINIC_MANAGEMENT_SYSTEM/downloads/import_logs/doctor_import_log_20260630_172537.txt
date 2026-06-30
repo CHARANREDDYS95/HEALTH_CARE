@@ -1,0 +1,16 @@
+============================================================
+DOCTOR IMPORT LOG
+============================================================
+
+FILE : Patient_Master_Import_10_Records_Gender_MFO.xlsx
+
+ROW 2 : DATABASE ERROR
+ROW 3 : DATABASE ERROR
+ROW 4 : DATABASE ERROR
+ROW 5 : DATABASE ERROR
+ROW 6 : DATABASE ERROR
+ROW 7 : DATABASE ERROR
+ROW 8 : DATABASE ERROR
+ROW 9 : DATABASE ERROR
+ROW 10 : DATABASE ERROR
+

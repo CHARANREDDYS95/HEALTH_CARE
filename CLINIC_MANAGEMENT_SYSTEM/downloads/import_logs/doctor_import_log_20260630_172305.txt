@@ -1,0 +1,17 @@
+============================================================
+DOCTOR IMPORT LOG
+============================================================
+
+FILE : Patient_Master_Import_10_Records.xlsx
+
+ROW 1 : Gender must be M, F or O
+ROW 2 : Gender must be M, F or O
+ROW 3 : Gender must be M, F or O
+ROW 4 : Gender must be M, F or O
+ROW 5 : Gender must be M, F or O
+ROW 6 : Gender must be M, F or O
+ROW 7 : Gender must be M, F or O
+ROW 8 : Gender must be M, F or O
+ROW 9 : Gender must be M, F or O
+ROW 10 : Gender must be M, F or O
+

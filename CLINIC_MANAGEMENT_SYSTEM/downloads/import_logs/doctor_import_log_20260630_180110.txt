@@ -1,0 +1,9 @@
+============================================================
+DOCTOR IMPORT LOG
+============================================================
+
+FILE : Patient_Master_Import_10_Records_Gender_MFO.xlsx
+
+ROW 1 : PHONE NUMBER ALREADY EXISTS
+ROW 10 : PHONE NUMBER ALREADY EXISTS
+
