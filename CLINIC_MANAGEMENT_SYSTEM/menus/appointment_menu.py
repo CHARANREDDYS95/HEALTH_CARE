@@ -738,7 +738,7 @@ class AppointmentMenu:
 
                 break
 
-            reason_for_visit = InputHelper.get_input(
+            reason_for_visit = InputHelper.get_reason(
                 "ENTER REASON FOR VISIT: "
             )
 
@@ -1024,29 +1024,9 @@ class AppointmentMenu:
 
                 if choice == "1":
 
-                    while True:
-
-                        appointment_id = InputHelper.get_input(
-                            "\nENTER APPOINTMENT ID (Ex: A001): "
-                        ).strip().upper()
-
-                    if not appointment_id.startswith(
-                        "A"
-                    ):
-
-                        print()
-
-                        print(
-                            "INVALID APPOINTMENT ID."
-                        )
-
-                        print(
-                            "PLEASE ENTER A VALID APPOINTMENT ID."
-                        )
-
-                        continue
-
-                    break
+                    appointment_id = InputHelper.get_appointment_id(
+                        "\nENTER APPOINTMENT ID (Ex: A001): "
+                    )
 
                     appointment = (
                         AppointmentService.search_appointment_by_id(
@@ -1057,7 +1037,7 @@ class AppointmentMenu:
                     if not appointment:
 
                         print(
-                            "APPOINTMENT NOT FOUND"
+                            "\nAPPOINTMENT NOT FOUND"
                         )
 
                         continue
@@ -1065,30 +1045,37 @@ class AppointmentMenu:
                     print("\n==========================================")
                     print("       APPOINTMENT DETAILS")
                     print("==========================================")
+
                     print(
                         "APPOINTMENT ID   :",
                         appointment.appointment_id
                     )
+
                     print(
                         "PATIENT ID       :",
                         appointment.patient_id
                     )
+
                     print(
                         "AVAILABILITY ID  :",
                         appointment.availability_id
                     )
+
                     print(
                         "APPOINTMENT DATE :",
                         appointment.appointment_date
                     )
+
                     print(
                         "TOKEN NUMBER     :",
                         appointment.token_no
                     )
+
                     print(
                         "STATUS           :",
                         appointment.appointment_status
                     )
+
                     print(
                         "REASON           :",
                         appointment.reason_for_visit
@@ -1575,7 +1562,7 @@ class AppointmentMenu:
 
             )
 
-            appointment_id = InputHelper.get_input(
+            appointment_id = InputHelper.get_appointment_id(
                 "ENTER APPOINTMENT ID: "
             ).strip().upper()
 
@@ -1710,15 +1697,155 @@ class AppointmentMenu:
 
             )
 
-            availability_id = InputHelper.get_update_input(
-                "ENTER AVAILABILITY ID",
-                appointment.availability_id
-            ).strip().upper()
+            while True:
 
-            reason_for_visit = InputHelper.get_update_input(
+                choice = InputHelper.get_integer(
+                    "ENTER CHOICE: "
+                )
+
+                if (
+
+                    1
+                    <=
+                    choice
+                    <=
+                    len(
+                        availability_list
+                    )
+
+                ):
+
+                    availability_id = (
+
+                        availability_list[
+                            choice - 1
+                        ][0].availability_id
+
+                    )
+
+                    break
+
+                print()
+
+                print(
+                    "INVALID CHOICE."
+                )
+
+                print(
+                    "PLEASE SELECT A VALID DOCTOR SESSION."
+                )
+            
+            tokens = (
+                AppointmentService.get_session_tokens(
+                    availability_id,
+                    appointment_date
+                )
+            )
+
+            print("\n========================================================")
+            print("              SESSION TOKEN STATUS")
+            print("========================================================")
+
+            print(
+
+                f"{'TOKEN NO.':<12}"
+                f"{'CONSULTATION TIME':<22}"
+                f"{'STATUS':<12}"
+
+            )
+
+            print(
+
+                "=" * 50
+
+            )
+
+            for (
+
+                token,
+                consultation_time,
+                status
+
+            ) in tokens:
+
+                print(
+
+                    f"{token:<12}"
+                    f"{consultation_time:<22}"
+                    f"{status:<12}"
+
+                )
+
+            print(
+
+                "=" * 50
+
+            )
+
+            available_tokens = [
+
+                str(token)
+
+                for (
+
+                    token,
+                    consultation_time,
+                    status
+
+                ) in tokens
+
+                if status == "AVAILABLE"
+
+            ]
+
+            if not available_tokens:
+
+                print()
+
+                print(
+                    "NO TOKENS AVAILABLE."
+                )
+
+                return
+
+            print()
+
+            print(
+                "AVAILABLE TOKENS :",
+                ", ".join(
+                    available_tokens
+                )
+            )
+            
+            reason_for_visit = InputHelper.get_update_reason(
                 "ENTER REASON FOR VISIT",
                 appointment.reason_for_visit
             )
+
+            while True:
+
+                token_no = InputHelper.get_integer(
+                    "ENTER TOKEN NUMBER: "
+                )
+
+                if str(token_no) in available_tokens:
+
+                    break
+
+                print()
+
+                print(
+                    "INVALID TOKEN NUMBER."
+                )
+
+                print()
+
+                print(
+                    "AVAILABLE TOKENS :",
+                    ", ".join(
+                        available_tokens
+                    )
+                )
 
             confirm = InputHelper.get_confirmation()
 
@@ -1734,6 +1861,7 @@ class AppointmentMenu:
                 appointment_id,
                 availability_id,
                 appointment_date,
+                token_no,
                 reason_for_visit
             )
 
@@ -1766,7 +1894,7 @@ class AppointmentMenu:
             )
 
             print(
-                f"Token Number      : {appointment.token_no}"
+                f"Token Number      : {token_no}"
             )
 
             print(
@@ -1864,9 +1992,9 @@ class AppointmentMenu:
 
             )
             
-            appointment_id = InputHelper.get_input(
+            appointment_id = InputHelper.get_appointment_id(
                 "ENTER APPOINTMENT ID: "
-            ).strip().upper()
+            )
 
             appointment = (
                 AppointmentService.search_appointment_by_id(

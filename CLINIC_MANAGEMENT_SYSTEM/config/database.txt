@@ -1,0 +1,5 @@
+HOST=ec2-3-111-0-185.ap-south-1.compute.amazonaws.com
+PORT=1521
+SERVICE_NAME=orcl
+USERNAME=team40_charan
+PASSWORD=team40_charan

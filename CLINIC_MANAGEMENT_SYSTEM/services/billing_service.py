@@ -132,6 +132,20 @@ class BillingService:
 
             )
 
+            if (
+
+                discount_amount
+                >
+                consultation_fee
+
+            ):
+
+                raise ValueError(
+
+                    "DISCOUNT CANNOT EXCEED CONSULTATION FEE"
+
+                )
+
             taxable_amount = (
 
                 consultation_fee
@@ -312,6 +326,20 @@ class BillingService:
 
             )
 
+            if (
+
+                discount_amount
+                >
+                consultation_fee
+
+            ):
+
+                raise ValueError(
+
+                    "DISCOUNT CANNOT EXCEED CONSULTATION FEE"
+
+                )
+
             taxable_amount = (
 
                 consultation_fee
@@ -456,6 +484,16 @@ class BillingService:
             payment_mode.strip().upper()
         )
 
+        transaction_reference = (
+
+            transaction_reference.strip().upper()
+
+            if transaction_reference
+
+            else ""
+
+        )
+
         if payment_mode not in (
             "CASH",
             "CARD",
@@ -472,6 +510,14 @@ class BillingService:
                 transaction_reference,
                 "Transaction Reference"
             )
+
+            if len(
+                transaction_reference
+            ) > 30:
+
+                raise ValueError(
+                    "TRANSACTION REFERENCE CANNOT EXCEED 30 CHARACTERS"
+                )
 
         else:
 
@@ -524,6 +570,12 @@ class BillingService:
                 "PAYMENT_ID",
                 "PY"
             )
+
+            if bill.total_amount <= 0:
+
+                raise ValueError(
+                    "INVALID BILL AMOUNT"
+                )
 
             payment = PaymentMaster(
                 payment_id=payment_id,

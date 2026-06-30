@@ -29,13 +29,11 @@ class BillingMenu:
 
                 if choice == "1":
 
-                    bill = (
                         BillingService.search_bill_by_id(
-                            InputHelper.get_input(
+                            InputHelper.get_bill_id(
                                 "ENTER BILL ID: "
-                            ).strip().upper()
+                            )
                         )
-                    )
 
                 elif choice == "2":
 
@@ -100,11 +98,11 @@ class BillingMenu:
 
                     )
 
-                    consultation_id = InputHelper.get_input(
+                    consultation_id = InputHelper.get_consultation_id(
 
                         "\nENTER CONSULTATION ID: "
 
-                    ).strip().upper()
+                    )
 
                     bill = (
 
@@ -212,14 +210,15 @@ class BillingMenu:
 
             f"{'BILL ID':<12}"
             f"{'CONSULT ID':<15}"
-            f"{'TOTAL':<15}"
+            f"{'TOTAL AMOUNT':<18}"
+            f"{'BILL DATE':<15}"
             f"{'STATUS':<15}"
 
         )
 
         print(
 
-            "=" * 60
+            "=" * 75
 
         )
 
@@ -229,14 +228,15 @@ class BillingMenu:
 
                 f"{bill.bill_id:<12}"
                 f"{bill.consultation_id:<15}"
-                f"{bill.total_amount:<15.2f}"
+                f"{bill.total_amount:<18.2f}"
+                f"{str(bill.bill_date):<15}"
                 f"{bill.bill_status:<15}"
 
             )
 
         print(
 
-            "=" * 60
+            "=" * 75
 
         )
 
@@ -417,11 +417,11 @@ class BillingMenu:
 
             )
             
-            consultation_id = InputHelper.get_input(
+            consultation_id = InputHelper.get_consultation_id(
                 "ENTER CONSULTATION ID: "
-            ).strip().upper()
+            )
 
-            discount_amount = InputHelper.get_float(
+            discount_amount = InputHelper.get_discount_amount(
                 "ENTER DISCOUNT AMOUNT: "
             )
 
@@ -623,9 +623,9 @@ class BillingMenu:
 
             )
 
-            bill_id = InputHelper.get_input(
+            bill_id = InputHelper.get_bill_id(
                 "ENTER BILL ID: "
-            ).strip().upper()
+            )
 
             bill = (
 
@@ -708,59 +708,13 @@ class BillingMenu:
                 "============================================================"
             )
             
-            print(
-                "\n=========================================="
-            )
-
-            print(
-                "            PAYMENT MODE"
-            )
-
-            print(
-                "=========================================="
-            )
-
-            print(
-                "1. CASH"
-            )
-
-            print(
-                "2. UPI"
-            )
-
-            print(
-                "3. CARD"
-            )
-
-            choice = InputHelper.get_input(
-                "ENTER CHOICE: "
-            )
-
-            if choice == "1":
-
-                payment_mode = "CASH"
-
-            elif choice == "2":
-
-                payment_mode = "UPI"
-
-            elif choice == "3":
-
-                payment_mode = "CARD"
-
-            else:
-
-                print(
-                    "INVALID CHOICE"
-                )
-
-                return
+            payment_mode = InputHelper.get_payment_mode()
 
             transaction_reference = None
 
             if payment_mode != "CASH":
 
-                transaction_reference = InputHelper.get_input(
+                transaction_reference = InputHelper.get_transaction_reference(
                     "ENTER TRANSACTION REFERENCE: "
                 )
 

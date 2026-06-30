@@ -10,7 +10,6 @@ from utils.display_constants import (
 from datetime import date
 
 
-
 class PatientMenu:
 
     @staticmethod
@@ -22,7 +21,7 @@ class PatientMenu:
                 "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
             )
 
-            patient_name = InputHelper.get_input(
+            patient_name = InputHelper.get_name(
                 "ENTER PATIENT NAME: "
             )
 
@@ -32,35 +31,35 @@ class PatientMenu:
                 "ENTER DOB (YYYY-MM-DD): "
             )
 
-            phone = InputHelper.get_input(
+            phone = InputHelper.get_phone(
                 "ENTER PHONE NUMBER: "
             )
 
-            address = InputHelper.get_input(
+            address = InputHelper.get_address(
                 "ENTER ADDRESS: "
             )
 
-            city = InputHelper.get_input(
+            city = InputHelper.get_city(
                 "ENTER CITY: "
             )
 
             blood_group = InputHelper.get_blood_group_choice()
 
-            occupation = InputHelper.get_input(
+            occupation = InputHelper.get_occupation(
                 "ENTER OCCUPATION: "
             )
 
             marital_status = InputHelper.get_marital_status_choice()
 
-            allergies = InputHelper.get_input(
+            allergies = InputHelper.get_allergies(
                 "ENTER ALLERGIES: "
             )
 
-            emergency_contact_name = InputHelper.get_input(
+            emergency_contact_name = InputHelper.get_name(
                 "ENTER EMERGENCY CONTACT NAME: "
             )
 
-            emergency_phone = InputHelper.get_input(
+            emergency_phone = InputHelper.get_phone(
                 "ENTER EMERGENCY PHONE: "
             )
             
@@ -122,12 +121,12 @@ class PatientMenu:
 
             try:
                 
-                choice = InputHelper.get_input(
-                    "ENTER CHOICE: "
-                )
-                
                 print(
                     "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
+                )
+                
+                choice = InputHelper.get_input(
+                    "ENTER CHOICE: "
                 )
 
                 if choice == "1":
@@ -343,27 +342,27 @@ class PatientMenu:
             print("TYPE A NEW VALUE AND PRESS ENTER TO UPDATE THE FIELD")
             print("==========================================")
 
-            patient_name = InputHelper.get_update_input(
+            patient_name = InputHelper.get_update_name(
                 "ENTER PATIENT NAME",
                 patient.patient_name
             )
 
-            phone = InputHelper.get_update_input(
+            phone = InputHelper.get_update_phone(
                 "ENTER PHONE",
                 patient.phone
             )
 
-            address = InputHelper.get_update_input(
+            address = InputHelper.get_update_address(
                 "ENTER ADDRESS",
                 patient.address
             )
 
-            city = InputHelper.get_update_input(
+            city = InputHelper.get_update_city(
                 "ENTER CITY",
                 patient.city
             )
 
-            occupation = InputHelper.get_update_input(
+            occupation = InputHelper.get_update_occupation(
                 "ENTER OCCUPATION",
                 patient.occupation
             )
@@ -374,17 +373,17 @@ class PatientMenu:
                 )
             )
 
-            allergies = InputHelper.get_update_input(
+            allergies = InputHelper.get_update_allergies(
                 "ENTER ALLERGIES",
                 patient.allergies
             )
 
-            emergency_contact_name = InputHelper.get_update_input(
+            emergency_contact_name = InputHelper.get_update_name(
                 "ENTER EMERGENCY CONTACT NAME",
                 patient.emergency_contact_name
             )
 
-            emergency_phone = InputHelper.get_update_input(
+            emergency_phone = InputHelper.get_update_phone(
                 "ENTER EMERGENCY PHONE",
                 patient.emergency_phone
             )

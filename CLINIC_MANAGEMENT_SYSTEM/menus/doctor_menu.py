@@ -8,12 +8,12 @@ class DoctorMenu:
     def add_doctor():
 
         try:
-            
+
             print(
                 "\nTYPE 'CANCEL' AT ANY TIME TO STOP THE OPERATION"
             )
-            
-            doctor_name = InputHelper.get_input(
+
+            doctor_name = InputHelper.get_name(
                 "ENTER DOCTOR NAME: "
             )
 
@@ -23,44 +23,41 @@ class DoctorMenu:
                 "ENTER DOB (YYYY-MM-DD): "
             )
 
-            specialization = InputHelper.get_input(
+            specialization = InputHelper.get_specialization(
                 "ENTER SPECIALIZATION: "
             )
 
-            qualification = InputHelper.get_input(
+            qualification = InputHelper.get_qualification(
                 "ENTER QUALIFICATION: "
             )
 
-            license_no = InputHelper.get_input(
+            license_no = InputHelper.get_license_number(
                 "ENTER LICENSE NUMBER: "
             )
 
-            experience_years = InputHelper.get_integer(
+            experience_years = InputHelper.get_experience(
                 "ENTER EXPERIENCE YEARS: "
             )
 
-            phone = InputHelper.get_input(
+            phone = InputHelper.get_phone(
                 "ENTER PHONE NUMBER: "
             )
 
-            email = InputHelper.get_input(
+            email = InputHelper.get_email(
                 "ENTER EMAIL: "
             )
 
-            address = InputHelper.get_input(
+            address = InputHelper.get_address(
                 "ENTER ADDRESS: "
             )
 
-            consultation_fee = InputHelper.get_float(
+            consultation_fee = InputHelper.get_consultation_fee(
                 "ENTER CONSULTATION FEE: "
             )
 
-            
             joining_date = InputHelper.get_date(
                 "ENTER JOINING DATE (YYYY-MM-DD): "
             )
-            
-
 
             doctor_id = DoctorService.add_doctor(
                 doctor_name,
@@ -76,7 +73,7 @@ class DoctorMenu:
                 consultation_fee,
                 joining_date
             )
-            
+
             print("\n==========================================")
             print("      DOCTOR ADDED SUCCESSFULLY")
             print("==========================================")
@@ -87,18 +84,21 @@ class DoctorMenu:
             )
 
             print("==========================================")
-            
+
         except OperationCancelled as e:
 
-            print(e)
+            print(
+                e
+            )
 
             return
 
-        except Exception:
+        except Exception as e:
 
-            import traceback
-
-            traceback.print_exc()
+            print(
+                "ERROR:",
+                e
+            )          
     @staticmethod
     def search_doctor():
 
@@ -338,27 +338,56 @@ class DoctorMenu:
             print("TYPE A NEW VALUE AND PRESS ENTER TO UPDATE THE FIELD")
             print("==========================================")
 
-            doctor_name = InputHelper.get_update_input(
+            doctor_name = InputHelper.get_update_name(
                 "ENTER DOCTOR NAME",
                 doctor.doctor_name
             )
 
-            phone = InputHelper.get_update_input(
+            phone = InputHelper.get_update_phone(
                 "ENTER PHONE",
                 doctor.phone
             )
+            
+            gender = InputHelper.get_update_gender_choice(
+                doctor.gender
+            )
 
-            email = InputHelper.get_update_input(
+            dob = InputHelper.get_update_date(
+                "ENTER DOB (YYYY-MM-DD)",
+                doctor.dob
+            )
+
+            email = InputHelper.get_update_email(
                 "ENTER EMAIL",
                 doctor.email
             )
+            
+            specialization = InputHelper.get_update_specialization(
+                "ENTER SPECIALIZATION",
+                doctor.specialization
+            )
+            
+            qualification = InputHelper.get_update_qualification(
+                "ENTER QUALIFICATION",
+                doctor.qualification
+            )
+            
+            license_no = InputHelper.get_update_license_number(
+                "ENTER LICENSE NUMBER",
+                doctor.license_no
+            )
 
-            address = InputHelper.get_update_input(
+            address = InputHelper.get_update_address(
                 "ENTER ADDRESS",
                 doctor.address
             )
+            
+            experience_years = InputHelper.get_update_experience(
+                "ENTER EXPERIENCE YEARS",
+                doctor.experience_years
+            )
 
-            consultation_fee = InputHelper.get_update_float(
+            consultation_fee = InputHelper.get_update_consultation_fee(
                 "ENTER CONSULTATION FEE",
                 doctor.consultation_fee
             )
@@ -367,10 +396,15 @@ class DoctorMenu:
                 doctor_id,
                 doctor_name,
                 phone,
+                gender,
+                dob,
                 email,
+                specialization,
+                qualification,
+                license_no,
                 address,
-                consultation_fee,
-                doctor.doctor_status
+                experience_years,
+                consultation_fee
             )
 
             print("\n==========================================")

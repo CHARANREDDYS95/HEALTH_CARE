@@ -276,19 +276,19 @@ class ConsultationMenu:
                 "ENTER CONSULTATION ID: "
                 ).strip().upper()
 
-            symptoms = InputHelper.get_input(
+            symptoms = InputHelper.get_symptoms(
                 "ENTER SYMPTOMS: "
                 )
 
-            diagnosis = InputHelper.get_input(
+            diagnosis = InputHelper.get_diagnosis(
                 "ENTER DIAGNOSIS: "
                 )
 
-            prescription = InputHelper.get_input(
+            prescription = InputHelper.get_prescription(
                 "ENTER PRESCRIPTION: "
                 )
 
-            notes = InputHelper.get_input(
+            notes = InputHelper.get_consultation_notes(
                 "ENTER NOTES: "
                 )
             
@@ -509,13 +509,14 @@ class ConsultationMenu:
 
                         f"{'CONSULT ID':<15}"
                         f"{'APP ID':<12}"
+                        f"{'DIAGNOSIS':<30}"
                         f"{'STATUS':<20}"
 
                     )
 
                     print(
 
-                        "=" * 50
+                        "=" * 80
 
                     )
 
@@ -525,13 +526,14 @@ class ConsultationMenu:
 
                             f"{consultation.consultation_id:<15}"
                             f"{consultation.appointment_id:<12}"
+                            f"{str(consultation.diagnosis):<30}"
                             f"{consultation.consultation_status:<20}"
 
                         )
 
                     print(
 
-                        "=" * 50
+                        "=" * 80
 
                     )
 
@@ -694,15 +696,16 @@ class ConsultationMenu:
 
                 f"{'CONSULT ID':<15}"
                 f"{'APP ID':<12}"
-                f"{'DIAGNOSIS':<30}"
-                f"{'FOLLOW-UP':<15}"
-                f"{'STATUS':<20}"
+                f"{'DIAGNOSIS':<25}"
+                f"{'FOLLOW-UP':<12}"
+                f"{'STATUS':<15}"
+                f"{'FOLLOW-UP DATE':<15}"
 
             )
 
             print(
 
-                "=" * 95
+                "=" * 110
 
             )
 
@@ -712,15 +715,16 @@ class ConsultationMenu:
 
                     f"{consultation.consultation_id:<15}"
                     f"{consultation.appointment_id:<12}"
-                    f"{str(consultation.diagnosis):<30}"
-                    f"{consultation.followup_required:<15}"
-                    f"{consultation.consultation_status:<20}"
+                    f"{str(consultation.diagnosis):<25}"
+                    f"{consultation.followup_required:<12}"
+                    f"{consultation.consultation_status:<15}"
+                    f"{str(consultation.followup_date):<15}"
 
                 )
 
             print(
 
-                "=" * 95
+                "=" * 110
 
             )
 

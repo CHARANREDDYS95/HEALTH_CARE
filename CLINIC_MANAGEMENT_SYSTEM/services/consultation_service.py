@@ -30,7 +30,9 @@ class ConsultationService:
             ).scalar_one_or_none()
 
             if not appointment:
-                raise ValueError("Appointment not found")
+                raise ValueError(
+                    "APPOINTMENT NOT FOUND"
+                )
 
             if appointment.appointment_status != "BOOKED":
                 raise ValueError("Appointment is not eligible for check-in")
@@ -69,7 +71,7 @@ class ConsultationService:
 
             if appointment.appointment_status != "CHECKED_IN":
                 raise ValueError(
-                    "Patient must be checked in before consultation"
+                    "PATIENT MUST BE CHECKED-IN BEFORE STARTING CONSULTATION"
                 )
                 
             existing = session.execute(
@@ -224,6 +226,39 @@ class ConsultationService:
             if notes
             else ""
         )
+        
+        if len(
+            symptoms
+        ) > 500:
+
+            raise ValueError(
+                "SYMPTOMS CANNOT EXCEED 500 CHARACTERS"
+            )
+
+        if len(
+            diagnosis
+        ) > 500:
+
+            raise ValueError(
+                "DIAGNOSIS CANNOT EXCEED 500 CHARACTERS"
+            )
+
+        if len(
+            prescription
+        ) > 1000:
+
+            raise ValueError(
+                "PRESCRIPTION CANNOT EXCEED 1000 CHARACTERS"
+            )
+
+        if len(
+            notes
+        ) > 1000:
+
+            raise ValueError(
+                "NOTES CANNOT EXCEED 1000 CHARACTERS"
+            )
+        
         session = get_session()
 
         try:
@@ -235,7 +270,9 @@ class ConsultationService:
             ).scalar_one_or_none()
 
             if not consultation:
-                raise ValueError("Consultation not found")
+                raise ValueError(
+                    "CONSULTATION NOT FOUND"
+                )
 
             if consultation.consultation_status != "IN_PROGRESS":
                 raise ValueError(
@@ -269,6 +306,12 @@ class ConsultationService:
 
                     raise ValueError(
                         "FOLLOW-UP DATE IS REQUIRED"
+                    )
+
+                if followup_date <= datetime.today().date():
+
+                    raise ValueError(
+                        "FOLLOW-UP DATE MUST BE IN THE FUTURE"
                     )
 
                 consultation.followup_date = (

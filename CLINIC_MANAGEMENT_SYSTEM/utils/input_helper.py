@@ -1,5 +1,29 @@
 from datetime import datetime
-
+from utils.validators import (
+    validate_name,
+    validate_phone,
+    validate_email,
+    validate_gender,
+    validate_status,
+    validate_positive_number,
+    validate_date_not_future,
+    validate_time,
+    validate_future_date,
+    validate_room,
+    validate_day,
+    validate_blood_group,
+    validate_address,
+    validate_city,
+    validate_specialization,
+    validate_qualification,
+    validate_license_number,
+    validate_occupation,
+    validate_reason,
+    validate_symptoms,
+    validate_diagnosis,
+    validate_prescription,
+    validate_transaction_reference
+)
 
 class OperationCancelled(
     Exception
@@ -32,6 +56,9 @@ class InputHelper:
                 continue
 
             return value
+        
+
+        
     @staticmethod
     def get_integer(message):
 
@@ -68,28 +95,874 @@ class InputHelper:
                 print(
                     "ENTER A VALID NUMBER"
                 )
+                
     @staticmethod
-    def get_date(message):
+    def get_phone(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                )
+
+                validate_phone(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_email(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_email(
+                    value
+                )
+
+                return value.lower()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_qualification(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_qualification(
+                    value
+                )
+
+                return value.upper()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+    
+    @staticmethod
+    def get_specialization(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_specialization(
+                    value
+                )
+
+                return value.upper()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_license_number(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip().upper()
+
+                validate_license_number(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_name(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_name(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_address(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_address(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_city(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_city(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_occupation(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_occupation(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_allergies(message):
+
+        value = InputHelper.get_input(
+            message
+        ).strip()
+
+        return value.title()
+    
+    @staticmethod
+    def get_reason(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_reason(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_reason(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_reason(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_appointment_id(
+        message
+    ):
+
+        while True:
+
+            appointment_id = InputHelper.get_input(
+                message
+            ).strip().upper()
+
+            if not appointment_id.startswith(
+                "A"
+            ):
+
+                print(
+                    "APPOINTMENT ID MUST START WITH 'A'"
+                )
+
+                continue
+
+            if len(
+                appointment_id
+            ) < 2:
+
+                print(
+                    "INVALID APPOINTMENT ID"
+                )
+
+                continue
+
+            if not appointment_id[1:].isdigit():
+
+                print(
+                    "INVALID APPOINTMENT ID"
+                )
+
+                continue
+
+            return appointment_id
+        
+    @staticmethod
+    def get_consultation_id(
+        message
+    ):
+
+        while True:
+
+            consultation_id = InputHelper.get_input(
+                message
+            ).strip().upper()
+
+            if not consultation_id.startswith(
+                "C"
+            ):
+
+                print(
+                    "CONSULTATION ID MUST START WITH 'C'"
+                )
+
+                continue
+
+            if len(
+                consultation_id
+            ) < 2:
+
+                print(
+                    "INVALID CONSULTATION ID"
+                )
+
+                continue
+
+            if not consultation_id[1:].isdigit():
+
+                print(
+                    "INVALID CONSULTATION ID"
+                )
+
+                continue
+
+            return consultation_id
+        
+    @staticmethod
+    def get_patient_id(
+        message
+    ):
+
+        while True:
+
+            patient_id = InputHelper.get_input(
+                message
+            ).strip().upper()
+
+            if not patient_id.startswith(
+                "P"
+            ):
+
+                print(
+                    "PATIENT ID MUST START WITH 'P'"
+                )
+
+                continue
+
+            if len(
+                patient_id
+            ) < 2:
+
+                print(
+                    "INVALID PATIENT ID"
+                )
+
+                continue
+
+            if not patient_id[1:].isdigit():
+
+                print(
+                    "INVALID PATIENT ID"
+                )
+
+                continue
+
+            return patient_id
+        
+    @staticmethod
+    def get_doctor_id(
+        message
+    ):
+
+        while True:
+
+            doctor_id = InputHelper.get_input(
+                message
+            ).strip().upper()
+
+            if not doctor_id.startswith(
+                "D"
+            ):
+
+                print(
+                    "DOCTOR ID MUST START WITH 'D'"
+                )
+
+                continue
+
+            if len(
+                doctor_id
+            ) < 2:
+
+                print(
+                    "INVALID DOCTOR ID"
+                )
+
+                continue
+
+            if not doctor_id[1:].isdigit():
+
+                print(
+                    "INVALID DOCTOR ID"
+                )
+
+                continue
+
+            return doctor_id
+        
+    @staticmethod
+    def get_symptoms(
+        message
+    ):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_symptoms(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+                
+    @staticmethod
+    def get_update_symptoms(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_symptoms(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_diagnosis(
+        message
+    ):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_diagnosis(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+                
+    @staticmethod
+    def get_update_diagnosis(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_diagnosis(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_prescription(
+        message
+    ):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                validate_prescription(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_update_prescription(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_prescription(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_consultation_notes(
+        message
+    ):
 
         while True:
 
             value = InputHelper.get_input(
                 message
+            ).strip()
+
+            if len(
+                value
+            ) > 1000:
+
+                print(
+                    "NOTES CANNOT EXCEED 1000 CHARACTERS"
+                )
+
+                continue
+
+            return value
+    
+    @staticmethod
+    def get_update_allergies(
+        message,
+        current_value
+    ):
+
+        value = input(
+            f"{message} [{current_value}]: "
+        ).strip()
+
+        if value.upper() == "CANCEL":
+
+            raise OperationCancelled(
+                "OPERATION CANCELLED"
             )
+
+        if value == "":
+
+            return current_value
+
+        return value.title()
+        
+    @staticmethod
+    def get_update_occupation(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
 
             try:
 
-                return datetime.strptime(
+                validate_occupation(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_city(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_city(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_experience(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                )
+
+                experience = int(
+                    value
+                )
+
+                validate_positive_number(
+                    experience,
+                    "EXPERIENCE",
+                    allow_zero=True
+                )
+
+                if experience > 60:
+
+                    print(
+                        "EXPERIENCE CANNOT BE GREATER THAN 60 YEARS"
+                    )
+
+                    continue
+
+                return experience
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_date(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                )
+
+                input_date = datetime.strptime(
                     value,
                     "%Y-%m-%d"
                 ).date()
 
-            except ValueError:
-
-                print(
-                    "ENTER DATE AS YYYY-MM-DD"
+                validate_date_not_future(
+                    input_date
                 )
 
+                return input_date
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_future_date(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                )
+
+                appointment_date = datetime.strptime(
+                    value,
+                    "%Y-%m-%d"
+                ).date()
+
+                validate_future_date(
+                    appointment_date
+                )
+
+                return appointment_date
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+
+    @staticmethod
+    def get_consultation_fee(message):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                )
+
+                consultation_fee = float(
+                    value
+                )
+
+                validate_positive_number(
+                    consultation_fee,
+                    "CONSULTATION FEE"
+                )
+
+                if consultation_fee > 100000:
+
+                    print(
+                        "CONSULTATION FEE IS TOO HIGH"
+                    )
+
+                    continue
+
+                return consultation_fee
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
 
     @staticmethod
     def get_yes_no(
@@ -227,30 +1100,53 @@ class InputHelper:
             print(
                 f"ENTER {'/'.join(choices)} ONLY"
             )
+
     @staticmethod
     def get_status_choice(current_status):
 
         while True:
 
-            print(f"\nCURRENT STATUS : {current_status}")
-            
+            print(
+                f"\nCURRENT STATUS : {current_status}"
+            )
+
             print("\nSELECT NEW STATUS")
             print("1. ACTIVE")
             print("2. INACTIVE")
-            
+
             choice = InputHelper.get_input(
                 "ENTER CHOICE: "
             )
 
             if choice == "1":
 
-                return "ACTIVE"
+                status = "ACTIVE"
 
             elif choice == "2":
-                
-                return "INACTIVE"
 
-            print("INVALID CHOICE. PLEASE ENTER 1 OR 2.")
+                status = "INACTIVE"
+
+            else:
+
+                print(
+                    "INVALID CHOICE. PLEASE ENTER 1 OR 2."
+                )
+
+                continue
+
+            try:
+
+                validate_status(
+                    status
+                )
+
+                return status
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
             
     @staticmethod
     def get_day_choice():
@@ -272,35 +1168,53 @@ class InputHelper:
 
             if choice == "1":
 
-                return "MONDAY"
+                day = "MONDAY"
 
             elif choice == "2":
 
-                return "TUESDAY"
+                day = "TUESDAY"
 
             elif choice == "3":
 
-                return "WEDNESDAY"
+                day = "WEDNESDAY"
 
             elif choice == "4":
 
-                return "THURSDAY"
+                day = "THURSDAY"
 
             elif choice == "5":
 
-                return "FRIDAY"
+                day = "FRIDAY"
 
             elif choice == "6":
 
-                return "SATURDAY"
+                day = "SATURDAY"
 
             elif choice == "7":
 
-                return "SUNDAY"
+                day = "SUNDAY"
 
-            print(
-                "INVALID CHOICE"
-            )
+            else:
+
+                print(
+                    "INVALID CHOICE"
+                )
+
+                continue
+
+            try:
+
+                validate_day(
+                    day
+                )
+
+                return day
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
 
     @staticmethod
     def get_update_day_choice(
@@ -319,74 +1233,91 @@ class InputHelper:
             print("7. SUNDAY")
             print("PRESS ENTER TO KEEP CURRENT DAY")
 
-            value = input(
-                f"ENTER CHOICE [{current_day}]: "
+            choice = input(
+                "ENTER CHOICE: "
             ).strip()
 
-            if value.upper() == "CANCEL":
+            if choice.upper() == "CANCEL":
 
                 raise OperationCancelled(
                     "OPERATION CANCELLED"
                 )
 
-            if value == "":
+            if choice == "":
 
                 return current_day
 
-            if value == "1":
+            if choice == "1":
 
-                return "MONDAY"
+                day = "MONDAY"
 
-            elif value == "2":
+            elif choice == "2":
 
-                return "TUESDAY"
+                day = "TUESDAY"
 
-            elif value == "3":
+            elif choice == "3":
 
-                return "WEDNESDAY"
+                day = "WEDNESDAY"
 
-            elif value == "4":
+            elif choice == "4":
 
-                return "THURSDAY"
+                day = "THURSDAY"
 
-            elif value == "5":
+            elif choice == "5":
 
-                return "FRIDAY"
+                day = "FRIDAY"
 
-            elif value == "6":
+            elif choice == "6":
 
-                return "SATURDAY"
+                day = "SATURDAY"
 
-            elif value == "7":
+            elif choice == "7":
 
-                return "SUNDAY"
+                day = "SUNDAY"
 
-            print(
-                "INVALID CHOICE"
-            )
+            else:
+
+                print(
+                    "INVALID CHOICE"
+                )
+
+                continue
+
+            try:
+
+                validate_day(
+                    day
+                )
+
+                return day
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
 
     @staticmethod
     def get_time(message):
 
         while True:
 
-            value = InputHelper.get_input(
-                message
-            )
-
             try:
 
-                datetime.strptime(
-                    value,
-                    "%I:%M %p"
+                value = InputHelper.get_input(
+                    message
+                )
+
+                validate_time(
+                    value
                 )
 
                 return value
 
-            except ValueError:
+            except ValueError as e:
 
                 print(
-                    "ENTER TIME AS HH:MM AM/PM"
+                    e
                 )
 
     @staticmethod
@@ -413,17 +1344,52 @@ class InputHelper:
 
             try:
 
-                datetime.strptime(
-                    value,
-                    "%I:%M %p"
+                validate_time(
+                    value
                 )
 
                 return value
 
-            except ValueError:
+            except ValueError as e:
 
                 print(
-                    "ENTER TIME AS HH:MM AM/PM"
+                    e
+                )
+
+    @staticmethod
+    def get_update_transaction_reference(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip().upper()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_transaction_reference(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
                 )
 
     @staticmethod
@@ -441,15 +1407,33 @@ class InputHelper:
 
             if choice == "1":
 
-                return "CR1"
+                room = "CR1"
 
             elif choice == "2":
 
-                return "CR2"
+                room = "CR2"
 
-            print(
-                "INVALID CHOICE"
-            )
+            else:
+
+                print(
+                    "INVALID CHOICE"
+                )
+
+                continue
+
+            try:
+
+                validate_room(
+                    room
+                )
+
+                return room
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
             
     @staticmethod
     def get_confirmation(
@@ -502,6 +1486,371 @@ class InputHelper:
                 return current_value
 
             return value
+        
+    @staticmethod
+    def get_update_name(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            if len(value) < 3:
+
+                print(
+                    "NAME MUST CONTAIN AT LEAST 3 LETTERS"
+                )
+
+                continue
+
+            if not all(
+
+                character.isalpha()
+
+                or
+
+                character in " .'-"
+
+                for character in value
+
+            ):
+
+                print(
+                    "NAME CAN CONTAIN ONLY LETTERS"
+                )
+
+                continue
+
+            return value.title()
+    
+    @staticmethod
+    def get_update_phone(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_phone(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_email(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_email(
+                    value
+                )
+
+                return value.lower()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_specialization(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_specialization(
+                    value
+                )
+
+                return value.upper()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_qualification(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_qualification(
+                    value
+                )
+
+                return value.upper()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_license_number(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip().upper()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_license_number(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_address(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                validate_address(
+                    value
+                )
+
+                return value.title()
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_experience(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                experience = int(
+                    value
+                )
+
+                validate_positive_number(
+                    experience,
+                    "EXPERIENCE",
+                    allow_zero=True
+                )
+
+                if experience > 60:
+
+                    print(
+                        "EXPERIENCE CANNOT BE GREATER THAN 60 YEARS"
+                    )
+
+                    continue
+
+                return experience
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+                
+    @staticmethod
+    def get_update_consultation_fee(
+        message,
+        current_value
+    ):
+
+        while True:
+
+            value = input(
+                f"{message} [{current_value}]: "
+            ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if value == "":
+
+                return current_value
+
+            try:
+
+                consultation_fee = float(
+                    value
+                )
+
+                validate_positive_number(
+                    consultation_fee,
+                    "CONSULTATION FEE"
+                )
+
+                if consultation_fee > 100000:
+
+                    print(
+                        "CONSULTATION FEE IS TOO HIGH"
+                    )
+
+                    continue
+
+                return consultation_fee
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
     
     @staticmethod
     def get_update_date(
@@ -511,9 +1860,15 @@ class InputHelper:
 
         while True:
 
-            value = InputHelper.get_input(
+            value = input(
                 f"{message} [{current_date}]: "
             ).strip()
+
+            if value.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
 
             if value == "":
 
@@ -521,17 +1876,21 @@ class InputHelper:
 
             try:
 
-                from datetime import datetime
-
-                return datetime.strptime(
+                input_date = datetime.strptime(
                     value,
                     "%Y-%m-%d"
                 ).date()
 
-            except ValueError:
+                validate_date_not_future(
+                    input_date
+                )
+
+                return input_date
+
+            except ValueError as e:
 
                 print(
-                    "INVALID DATE (YYYY-MM-DD)"
+                    e
                 )
                 
     @staticmethod
@@ -550,19 +1909,104 @@ class InputHelper:
 
             if choice == "1":
 
-                return "M"
+                gender = "M"
 
             elif choice == "2":
 
-                return "F"
+                gender = "F"
 
             elif choice == "3":
 
-                return "O"
+                gender = "O"
+
+            else:
+
+                print(
+                    "INVALID CHOICE. PLEASE ENTER 1, 2 OR 3."
+                )
+
+                continue
+
+            try:
+
+                validate_gender(
+                    gender
+                )
+
+                return gender
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+            
+    @staticmethod
+    def get_update_gender_choice(
+        current_gender
+    ):
+
+        while True:
 
             print(
-                "INVALID CHOICE. PLEASE ENTER 1, 2 OR 3."
+                f"\nCURRENT GENDER : {current_gender}"
             )
+
+            print(
+                "PRESS ENTER TO KEEP CURRENT VALUE"
+            )
+
+            print("1. MALE")
+            print("2. FEMALE")
+            print("3. OTHER")
+
+            choice = input(
+                "ENTER CHOICE: "
+            ).strip()
+
+            if choice.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if choice == "":
+
+                return current_gender
+
+            if choice == "1":
+
+                gender = "M"
+
+            elif choice == "2":
+
+                gender = "F"
+
+            elif choice == "3":
+
+                gender = "O"
+
+            else:
+
+                print(
+                    "INVALID CHOICE. PLEASE ENTER 1, 2 OR 3."
+                )
+
+                continue
+
+            try:
+
+                validate_gender(
+                    gender
+                )
+
+                return gender
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
             
     @staticmethod
     def get_blood_group_choice():
@@ -586,39 +2030,144 @@ class InputHelper:
 
             if choice == "1":
 
-                return "A+"
+                blood_group = "A+"
 
             elif choice == "2":
 
-                return "A-"
+                blood_group = "A-"
 
             elif choice == "3":
 
-                return "B+"
+                blood_group = "B+"
 
             elif choice == "4":
 
-                return "B-"
+                blood_group = "B-"
 
             elif choice == "5":
 
-                return "AB+"
+                blood_group = "AB+"
 
             elif choice == "6":
 
-                return "AB-"
+                blood_group = "AB-"
 
             elif choice == "7":
 
-                return "O+"
+                blood_group = "O+"
 
             elif choice == "8":
 
-                return "O-"
+                blood_group = "O-"
 
-            print(
-                "INVALID CHOICE. PLEASE ENTER 1 TO 8."
-            )
+            else:
+
+                print(
+                    "INVALID CHOICE. PLEASE ENTER 1 TO 8."
+                )
+
+                continue
+
+            try:
+
+                validate_blood_group(
+                    blood_group
+                )
+
+                return blood_group
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+                
+    @staticmethod
+    def get_update_blood_group_choice(
+        current_blood_group
+    ):
+
+        while True:
+
+            print("\nSELECT BLOOD GROUP")
+
+            print("1. A+")
+            print("2. A-")
+            print("3. B+")
+            print("4. B-")
+            print("5. AB+")
+            print("6. AB-")
+            print("7. O+")
+            print("8. O-")
+            print("PRESS ENTER TO KEEP CURRENT BLOOD GROUP")
+
+            choice = input(
+                "ENTER CHOICE: "
+            ).strip()
+
+            if choice.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if choice == "":
+
+                return current_blood_group
+
+            if choice == "1":
+
+                blood_group = "A+"
+
+            elif choice == "2":
+
+                blood_group = "A-"
+
+            elif choice == "3":
+
+                blood_group = "B+"
+
+            elif choice == "4":
+
+                blood_group = "B-"
+
+            elif choice == "5":
+
+                blood_group = "AB+"
+
+            elif choice == "6":
+
+                blood_group = "AB-"
+
+            elif choice == "7":
+
+                blood_group = "O+"
+
+            elif choice == "8":
+
+                blood_group = "O-"
+
+            else:
+
+                print(
+                    "INVALID CHOICE. PLEASE ENTER 1 TO 8."
+                )
+
+                continue
+
+            try:
+
+                validate_blood_group(
+                    blood_group
+                )
+
+                return blood_group
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
             
     @staticmethod
     def get_marital_status_choice():
@@ -707,3 +2256,211 @@ class InputHelper:
             print(
                 "INVALID CHOICE"
             )
+            
+    @staticmethod
+    def get_bill_id(
+        message
+    ):
+
+        while True:
+
+            bill_id = InputHelper.get_input(
+                message
+            ).strip().upper()
+
+            if not bill_id.startswith(
+                "B"
+            ):
+
+                print(
+                    "BILL ID MUST START WITH 'B'"
+                )
+
+                continue
+
+            if len(
+                bill_id
+            ) < 2:
+
+                print(
+                    "INVALID BILL ID"
+                )
+
+                continue
+
+            if not bill_id[1:].isdigit():
+
+                print(
+                    "INVALID BILL ID"
+                )
+
+                continue
+
+            return bill_id
+        
+    @staticmethod
+    def get_discount_amount(
+        message
+    ):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip()
+
+                discount = float(
+                    value
+                )
+
+                if discount < 0:
+
+                    print(
+                        "DISCOUNT CANNOT BE NEGATIVE"
+                    )
+
+                    continue
+
+                return discount
+
+            except ValueError:
+
+                print(
+                    "ENTER A VALID DISCOUNT AMOUNT"
+                )
+                
+    @staticmethod
+    def get_payment_mode():
+
+        while True:
+
+            print()
+
+            print(
+                "=========================================="
+            )
+
+            print(
+                "            PAYMENT MODE"
+            )
+
+            print(
+                "=========================================="
+            )
+
+            print(
+                "1. CASH"
+            )
+
+            print(
+                "2. UPI"
+            )
+
+            print(
+                "3. CARD"
+            )
+
+            choice = InputHelper.get_input(
+                "ENTER CHOICE: "
+            )
+
+            if choice == "1":
+
+                return "CASH"
+
+            elif choice == "2":
+
+                return "UPI"
+
+            elif choice == "3":
+
+                return "CARD"
+
+            print()
+
+            print(
+                "INVALID CHOICE"
+            )
+            
+    @staticmethod
+    def get_transaction_reference(
+        message
+    ):
+
+        while True:
+
+            try:
+
+                value = InputHelper.get_input(
+                    message
+                ).strip().upper()
+
+                validate_transaction_reference(
+                    value
+                )
+
+                return value
+
+            except ValueError as e:
+
+                print(
+                    e
+                )
+        
+    @staticmethod
+    def get_update_room_choice(
+        current_room
+    ):
+
+        while True:
+
+            print("\nSELECT CONSULTATION ROOM")
+            print("1. CR1")
+            print("2. CR2")
+            print("PRESS ENTER TO KEEP CURRENT ROOM")
+
+            choice = input(
+                "ENTER CHOICE: "
+            ).strip()
+
+            if choice.upper() == "CANCEL":
+
+                raise OperationCancelled(
+                    "OPERATION CANCELLED"
+                )
+
+            if choice == "":
+
+                return current_room
+
+            if choice == "1":
+
+                room = "CR1"
+
+            elif choice == "2":
+
+                room = "CR2"
+
+            else:
+
+                print(
+                    "INVALID CHOICE"
+                )
+
+                continue
+
+            try:
+
+                validate_room(
+                    room
+                )
+
+                return room
+
+            except ValueError as e:
+
+                print(
+                    e
+                )

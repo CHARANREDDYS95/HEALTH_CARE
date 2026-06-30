@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import select, func
+from sqlalchemy import select
 from connection import get_session
 from utils.id_generator import generate_id
 from utils.validators import (
@@ -12,6 +12,16 @@ from models.doctor_availability import DoctorAvailability
 from models.doctor_master import DoctorMaster
 from models.session_master import SessionMaster
 from datetime import datetime, timedelta
+from config.config_reader import (
+    ConfigReader
+)
+
+CONSULTATION_DURATION = int(
+    ConfigReader.get(
+        "consultation_duration.txt",
+        "CONSULTATION_DURATION"
+    )
+)
 
 class AppointmentService:
 
@@ -259,7 +269,7 @@ class AppointmentService:
                     timedelta(
                         minutes=(
                             token - 1
-                        ) * 12
+                        ) * CONSULTATION_DURATION
                     )
                 ).strftime(
                     "%I:%M %p"
@@ -348,7 +358,7 @@ class AppointmentService:
                             token - 1
                         )
                         *
-                        availability.consultation_duration
+                        CONSULTATION_DURATION
                     )
                 ).time()
 
@@ -552,8 +562,9 @@ class AppointmentService:
         appointment_id,
         availability_id,
         appointment_date,
+        token_no,
         reason_for_visit
-    ):
+        ):
 
         validate_required(
             appointment_id,
@@ -655,41 +666,82 @@ class AppointmentService:
                 )
 
             if (
+
                 appointment.availability_id
                 != availability_id
+
                 or
+
                 appointment.appointment_date
                 != appointment_date
+
+                or
+
+                appointment.token_no
+                != token_no
+
             ):
 
-                booked_count = session.execute(
+                if (
+
+                    token_no
+                    <
+                    1
+
+                    or
+
+                    token_no
+                    >
+                    availability.max_patients
+
+                ):
+
+                    raise ValueError(
+                        "INVALID TOKEN NUMBER"
+                    )
+
+                existing_token = session.execute(
                     select(
-                        func.count()
+                        AppointmentMaster
                     ).where(
                         AppointmentMaster.availability_id
                         == availability_id,
+
                         AppointmentMaster.appointment_date
                         == appointment_date,
+
+                        AppointmentMaster.token_no
+                        == token_no,
+
                         AppointmentMaster.appointment_status
                         == "BOOKED",
+
                         AppointmentMaster.appointment_id
                         != appointment_id
                     )
-                ).scalar()
+                ).scalar_one_or_none()
 
-                if booked_count >= availability.max_patients:
+                if existing_token:
 
                     raise ValueError(
-                        "SESSION IS FULL"
+                        "TOKEN IS ALREADY BOOKED"
                     )
 
-                appointment.token_no = (
-                    booked_count + 1
-                )
+            appointment.availability_id = (
+                availability_id
+            )
 
-            appointment.availability_id = availability_id
-            appointment.appointment_date = appointment_date
-            appointment.reason_for_visit = reason_for_visit
+            appointment.appointment_date = (
+                appointment_date
+            )
+
+            appointment.token_no = (
+                token_no
+            )
+
+            appointment.reason_for_visit = (
+                reason_for_visit
+            )
 
             session.commit()
 

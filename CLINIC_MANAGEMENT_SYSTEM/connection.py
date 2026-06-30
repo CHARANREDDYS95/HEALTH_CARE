@@ -1,12 +1,34 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-USERNAME = "team40_charan"
-PASSWORD = "team40_charan"
+from config.config_reader import (
+    ConfigReader
+)
 
-HOST = "ec2-3-111-0-185.ap-south-1.compute.amazonaws.com"
-PORT = "1521"
-SERVICE_NAME = "orcl"
+USERNAME = ConfigReader.get(
+    "database.txt",
+    "USERNAME"
+)
+
+PASSWORD = ConfigReader.get(
+    "database.txt",
+    "PASSWORD"
+)
+
+HOST = ConfigReader.get(
+    "database.txt",
+    "HOST"
+)
+
+PORT = ConfigReader.get(
+    "database.txt",
+    "PORT"
+)
+
+SERVICE_NAME = ConfigReader.get(
+    "database.txt",
+    "SERVICE_NAME"
+)
 
 DATABASE_URL = (
     f"oracle+oracledb://{USERNAME}:{PASSWORD}@"
@@ -25,8 +47,12 @@ SessionLocal = sessionmaker(
     autocommit=False
 )
 
+
 def get_engine():
+
     return engine
 
+
 def get_session():
+
     return SessionLocal()

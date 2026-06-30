@@ -219,3 +219,356 @@ def validate_appointment_date(
         raise ValueError(
             "APPOINTMENT DATE CANNOT BE IN THE PAST"
         )
+        
+def validate_name(
+    name
+):
+
+    if len(
+        name
+    ) < 3:
+
+        raise ValueError(
+            "NAME MUST CONTAIN AT LEAST 3 LETTERS"
+        )
+
+    if not all(
+
+        character.isalpha()
+
+        or
+
+        character in " .'-"
+
+        for character in name
+
+    ):
+
+        raise ValueError(
+            "NAME CAN CONTAIN ONLY LETTERS"
+        )
+        
+def validate_address(
+    address
+):
+
+    if len(
+        address
+    ) < 10:
+
+        raise ValueError(
+            "ADDRESS MUST CONTAIN AT LEAST 10 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " ,./#-"
+
+        for character in address
+
+    ):
+
+        raise ValueError(
+            "ADDRESS CONTAINS INVALID CHARACTERS"
+        )
+        
+def validate_city(
+    city
+):
+
+    if len(
+        city
+    ) < 2:
+
+        raise ValueError(
+            "CITY NAME MUST CONTAIN AT LEAST 2 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalpha()
+
+        or
+
+        character in " -"
+
+        for character in city
+
+    ):
+
+        raise ValueError(
+            "CITY NAME CAN CONTAIN ONLY LETTERS"
+        )
+        
+def validate_specialization(
+    specialization
+):
+
+    if len(
+        specialization
+    ) < 3:
+
+        raise ValueError(
+            "SPECIALIZATION MUST CONTAIN AT LEAST 3 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " .&-/"
+
+        for character in specialization
+
+    ):
+
+        raise ValueError(
+            "INVALID SPECIALIZATION"
+        )
+        
+def validate_qualification(
+    qualification
+):
+
+    if len(
+        qualification
+    ) < 2:
+
+        raise ValueError(
+            "QUALIFICATION MUST CONTAIN AT LEAST 2 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " .-/"
+
+        for character in qualification
+
+    ):
+
+        raise ValueError(
+            "INVALID QUALIFICATION"
+        )
+        
+def validate_license_number(
+    license_number
+):
+
+    if len(
+        license_number
+    ) < 5:
+
+        raise ValueError(
+            "INVALID LICENSE NUMBER"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character == "-"
+
+        for character in license_number
+
+    ):
+
+        raise ValueError(
+            "LICENSE NUMBER CAN CONTAIN ONLY LETTERS, NUMBERS AND '-'"
+        )
+
+def validate_occupation(
+    occupation
+):
+
+    if len(
+        occupation
+    ) < 2:
+
+        raise ValueError(
+            "OCCUPATION MUST CONTAIN AT LEAST 2 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " .&/-"
+
+        for character in occupation
+
+    ):
+
+        raise ValueError(
+            "INVALID OCCUPATION"
+        )
+        
+def validate_reason(
+    reason
+):
+
+    if len(
+        reason
+    ) < 5:
+
+        raise ValueError(
+            "REASON MUST CONTAIN AT LEAST 5 CHARACTERS"
+        )
+
+    if len(
+        reason
+    ) > 200:
+
+        raise ValueError(
+            "REASON CANNOT EXCEED 200 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " .,()/-"
+
+        for character in reason
+
+    ):
+
+        raise ValueError(
+            "REASON CONTAINS INVALID CHARACTERS"
+        )
+        
+def validate_symptoms(
+    symptoms
+):
+
+    if len(
+        symptoms
+    ) < 3:
+
+        raise ValueError(
+            "SYMPTOMS MUST CONTAIN AT LEAST 3 CHARACTERS"
+        )
+
+    if len(
+        symptoms
+    ) > 500:
+
+        raise ValueError(
+            "SYMPTOMS CANNOT EXCEED 500 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " .,()-/"
+
+        for character in symptoms
+
+    ):
+
+        raise ValueError(
+            "SYMPTOMS CONTAIN INVALID CHARACTERS"
+        )
+        
+def validate_diagnosis(
+    diagnosis
+):
+
+    if len(
+        diagnosis
+    ) < 3:
+
+        raise ValueError(
+            "DIAGNOSIS MUST CONTAIN AT LEAST 3 CHARACTERS"
+        )
+
+    if len(
+        diagnosis
+    ) > 500:
+
+        raise ValueError(
+            "DIAGNOSIS CANNOT EXCEED 500 CHARACTERS"
+        )
+
+    if not all(
+
+        character.isalnum()
+
+        or
+
+        character in " .,()-/"
+
+        for character in diagnosis
+
+    ):
+
+        raise ValueError(
+            "DIAGNOSIS CONTAINS INVALID CHARACTERS"
+        )
+        
+def validate_prescription(
+    prescription
+):
+
+    if len(
+        prescription
+    ) < 3:
+
+        raise ValueError(
+            "PRESCRIPTION MUST CONTAIN AT LEAST 3 CHARACTERS"
+        )
+
+    if len(
+        prescription
+    ) > 1000:
+
+        raise ValueError(
+            "PRESCRIPTION CANNOT EXCEED 1000 CHARACTERS"
+        )
+        
+def validate_transaction_reference(
+    transaction_reference
+):
+
+    if len(
+        transaction_reference
+    ) < 4:
+
+        raise ValueError(
+            "TRANSACTION REFERENCE MUST CONTAIN AT LEAST 4 CHARACTERS"
+        )
+
+    if len(
+        transaction_reference
+    ) > 30:
+
+        raise ValueError(
+            "TRANSACTION REFERENCE CANNOT EXCEED 30 CHARACTERS"
+        )
+
+    if not transaction_reference.replace(
+        "-",
+        ""
+    ).isalnum():
+
+        raise ValueError(
+            "INVALID TRANSACTION REFERENCE"
+        )
