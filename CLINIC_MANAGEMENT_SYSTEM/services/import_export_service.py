@@ -513,13 +513,23 @@ class ImportExportService:
 
                     imported += 1
 
-                except Exception as e:
+                except ValueError as e:
 
                     skipped += 1
 
                     errors.append(
 
                         f"ROW {index} : {e}"
+
+                    )
+
+                except Exception:
+
+                    skipped += 1
+
+                    errors.append(
+
+                        f"ROW {index} : DATABASE ERROR"
 
                     )
 
@@ -631,13 +641,23 @@ class ImportExportService:
 
                     imported += 1
 
-                except Exception as e:
+                except ValueError as e:
 
                     skipped += 1
 
                     errors.append(
 
                         f"ROW {index} : {e}"
+
+                    )
+
+                except Exception:
+
+                    skipped += 1
+
+                    errors.append(
+
+                        f"ROW {index} : DATABASE ERROR"
 
                     )
 
@@ -747,10 +767,10 @@ class ImportExportService:
 
             if file_format == "CSV":
 
-                return ExportHelper.export_to_csv(
+                file_path = ExportHelper.export_to_csv(
 
                     records,
-                    
+
                     ImportExportService.EXPORT_FOLDER,
 
                     ImportExportService.EXPORT_FILE_NAME
@@ -759,7 +779,7 @@ class ImportExportService:
 
             elif file_format == "EXCEL":
 
-                return ExportHelper.export_to_excel(
+                file_path = ExportHelper.export_to_excel(
 
                     records,
 
@@ -771,10 +791,10 @@ class ImportExportService:
 
             elif file_format == "JSON":
 
-                return ExportHelper.export_to_json(
+                file_path = ExportHelper.export_to_json(
 
                     records,
-                    
+
                     ImportExportService.EXPORT_FOLDER,
 
                     ImportExportService.EXPORT_FILE_NAME
@@ -783,7 +803,7 @@ class ImportExportService:
 
             elif file_format == "TXT":
 
-                return ExportHelper.export_to_txt(
+                file_path = ExportHelper.export_to_txt(
 
                     records,
 
@@ -798,6 +818,24 @@ class ImportExportService:
                 raise ValueError(
                     "INVALID FILE FORMAT"
                 )
+
+            return {
+
+                "file_path":
+                file_path,
+
+                "total_records":
+                len(
+                    records
+                ),
+
+                "format":
+                file_format,
+
+                "module":
+                "PATIENTS"
+
+            }
 
         finally:
 
@@ -881,7 +919,7 @@ class ImportExportService:
 
             if file_format == "CSV":
 
-                return ExportHelper.export_to_csv(
+                file_path = ExportHelper.export_to_csv(
 
                     records,
 
@@ -893,7 +931,7 @@ class ImportExportService:
 
             elif file_format == "EXCEL":
 
-                return ExportHelper.export_to_excel(
+                file_path = ExportHelper.export_to_excel(
 
                     records,
 
@@ -905,7 +943,7 @@ class ImportExportService:
 
             elif file_format == "JSON":
 
-                return ExportHelper.export_to_json(
+                file_path = ExportHelper.export_to_json(
 
                     records,
 
@@ -917,7 +955,7 @@ class ImportExportService:
 
             elif file_format == "TXT":
 
-                return ExportHelper.export_to_txt(
+                file_path = ExportHelper.export_to_txt(
 
                     records,
 
@@ -932,6 +970,24 @@ class ImportExportService:
                 raise ValueError(
                     "INVALID FILE FORMAT"
                 )
+
+            return {
+
+                "file_path":
+                file_path,
+
+                "total_records":
+                len(
+                    records
+                ),
+
+                "format":
+                file_format,
+
+                "module":
+                "DOCTORS"
+
+            }
 
         finally:
 

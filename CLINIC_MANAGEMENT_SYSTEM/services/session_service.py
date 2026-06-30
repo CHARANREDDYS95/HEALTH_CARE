@@ -5,10 +5,14 @@ from connection import get_session
 from utils.id_generator import generate_id
 from utils.validators import (
     validate_required,
-    validate_positive_number,
     validate_status,
     validate_room,
     validate_time
+)
+
+
+from utils.appointment_slot_generator import (
+    AppointmentSlotGenerator
 )
 
 
@@ -19,8 +23,7 @@ class SessionService:
         session_name,
         room_id,
         start_time,
-        end_time,
-        max_patients
+        end_time
     ):
 
         validate_required(
@@ -36,11 +39,6 @@ class SessionService:
         validate_required(
             end_time,
             "End Time"
-        )
-
-        validate_positive_number(
-            max_patients,
-            "Max Patients"
         )
 
         validate_room(
@@ -71,13 +69,41 @@ class SessionService:
                 "START TIME MUST BE BEFORE END TIME"
             )
 
+        slot_details = (
+
+            AppointmentSlotGenerator.generate_slots(
+
+                start_time,
+
+                end_time
+
+            )
+
+        )
+
+        max_patients = (
+
+            slot_details[
+                "max_patients"
+            ]
+
+        )
+
+        max_patients = slot_details[
+            "max_patients"
+        ]
+
         session = get_session()
 
         try:
 
             session_exists = session.execute(
-                select(SessionMaster).where(
-                    SessionMaster.session_name == session_name
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.session_name
+                    ==
+                    session_name
                 )
             ).scalar_one_or_none()
 
@@ -88,9 +114,16 @@ class SessionService:
                 )
 
             existing_sessions = session.execute(
-                select(SessionMaster).where(
-                    SessionMaster.room_id == room_id,
-                    SessionMaster.status == "ACTIVE"
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.room_id
+                    ==
+                    room_id,
+
+                    SessionMaster.status
+                    ==
+                    "ACTIVE"
                 )
             ).scalars().all()
 
@@ -107,9 +140,13 @@ class SessionService:
                 )
 
                 if (
+
                     new_start < existing_end
+
                     and
+
                     new_end > existing_start
+
                 ):
 
                     raise ValueError(
@@ -117,19 +154,31 @@ class SessionService:
                     )
 
             session_id = generate_id(
+
                 "SESSION_MASTER",
+
                 "SESSION_ID",
+
                 "S"
+
             )
 
             session_master = SessionMaster(
+
                 session_id=session_id,
+
                 session_name=session_name,
+
                 room_id=room_id,
+
                 start_time=start_time,
+
                 end_time=end_time,
+
                 max_patients=max_patients,
+
                 status="ACTIVE"
+
             )
 
             session.add(
@@ -138,11 +187,44 @@ class SessionService:
 
             session.commit()
 
-            return session_id
+            return {
+
+                "session_id":
+
+                session_id,
+
+                "max_patients":
+
+                slot_details[
+                    "max_patients"
+                ],
+
+                "consultation_duration":
+
+                slot_details[
+                    "consultation_duration"
+                ],
+
+                "session_duration":
+
+                slot_details[
+                    "session_duration"
+                ],
+
+                "distributed_minutes":
+
+                slot_details[
+                    "distributed_minutes"
+                ]
+
+            }
+
+            
 
         except Exception:
 
             session.rollback()
+
             raise
 
         finally:
@@ -218,9 +300,13 @@ class SessionService:
         session_name,
         room_id,
         start_time,
-        end_time,
-        max_patients
+        end_time
     ):
+
+        validate_required(
+            session_id,
+            "Session ID"
+        )
 
         validate_required(
             session_name,
@@ -235,11 +321,6 @@ class SessionService:
         validate_required(
             end_time,
             "End Time"
-        )
-
-        validate_positive_number(
-            max_patients,
-            "Max Patients"
         )
 
         validate_room(
@@ -270,13 +351,37 @@ class SessionService:
                 "START TIME MUST BE BEFORE END TIME"
             )
 
+        slot_details = (
+
+            AppointmentSlotGenerator.generate_slots(
+
+                start_time,
+
+                end_time
+
+            )
+
+        )
+
+        max_patients = (
+
+            slot_details[
+                "max_patients"
+            ]
+
+        )
+
         session = get_session()
 
         try:
 
             session_master = session.execute(
-                select(SessionMaster).where(
-                    SessionMaster.session_id == session_id
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.session_id
+                    ==
+                    session_id
                 )
             ).scalar_one_or_none()
 
@@ -287,9 +392,16 @@ class SessionService:
                 )
 
             duplicate = session.execute(
-                select(SessionMaster).where(
-                    SessionMaster.session_name == session_name,
-                    SessionMaster.session_id != session_id
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.session_name
+                    ==
+                    session_name,
+
+                    SessionMaster.session_id
+                    !=
+                    session_id
                 )
             ).scalar_one_or_none()
 
@@ -300,10 +412,20 @@ class SessionService:
                 )
 
             existing_sessions = session.execute(
-                select(SessionMaster).where(
-                    SessionMaster.room_id == room_id,
-                    SessionMaster.status == "ACTIVE",
-                    SessionMaster.session_id != session_id
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.room_id
+                    ==
+                    room_id,
+
+                    SessionMaster.status
+                    ==
+                    "ACTIVE",
+
+                    SessionMaster.session_id
+                    !=
+                    session_id
                 )
             ).scalars().all()
 
@@ -320,28 +442,73 @@ class SessionService:
                 )
 
                 if (
+
                     new_start < existing_end
+
                     and
+
                     new_end > existing_start
+
                 ):
 
                     raise ValueError(
                         "SESSION TIME OVERLAPS WITH AN EXISTING SESSION"
                     )
 
-            session_master.session_name = session_name
-            session_master.room_id = room_id
-            session_master.start_time = start_time
-            session_master.end_time = end_time
-            session_master.max_patients = max_patients
+            session_master.session_name = (
+                session_name
+            )
+
+            session_master.room_id = (
+                room_id
+            )
+
+            session_master.start_time = (
+                start_time
+            )
+
+            session_master.end_time = (
+                end_time
+            )
+
+            session_master.max_patients = (
+                max_patients
+            )
 
             session.commit()
 
-            return True
+            return {
+
+                "max_patients":
+
+                slot_details[
+                    "max_patients"
+                ],
+
+                "consultation_duration":
+
+                slot_details[
+                    "consultation_duration"
+                ],
+
+                "session_duration":
+
+                slot_details[
+                    "session_duration"
+                ],
+
+                "distributed_minutes":
+
+                slot_details[
+                    "distributed_minutes"
+                ]
+
+            }
 
         except Exception:
 
             session.rollback()
+
             raise
 
         finally:

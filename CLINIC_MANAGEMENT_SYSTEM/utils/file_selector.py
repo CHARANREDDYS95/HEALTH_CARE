@@ -32,7 +32,7 @@ class FileSelector:
         files.sort()
 
         return files
-    
+
     @staticmethod
     def select_files(
         folder,
@@ -40,95 +40,105 @@ class FileSelector:
         file_type
     ):
 
-        import os
+        while True:
 
-        files = FileSelector.get_files(
-            folder,
-            extension
-        )
-
-        if not files:
-
-            print(
-                f"\nNO {file_type} FILES FOUND."
+            files = FileSelector.get_files(
+                folder,
+                extension
             )
 
-            return None
+            if not files:
 
-        print("\n===================================")
-        print(
-            f"   AVAILABLE {file_type} FILES"
-        )
-        print("===================================")
+                print(
+                    f"\nNO {file_type} FILES FOUND."
+                )
 
-        for index, file in enumerate(
-            files,
-            start=1
-        ):
+                return None
 
+            print("\n========================================")
             print(
-                f"{index}. {file}"
+                f"      AVAILABLE {file_type} FILES"
             )
+            print("========================================")
 
-        print("\nA. IMPORT ALL")
-        print("B. BACK")
+            for index, file in enumerate(
+                files,
+                start=1
+            ):
 
-        choice = input(
-            "\nENTER CHOICE : "
-        ).strip().upper()
-
-        if choice == "B":
-
-            return None
-
-        if choice == "A":
-
-            return [
-
-                os.path.join(
-                    folder,
-                    file
+                print(
+                    f"{index}. {file}"
                 )
 
-                for file in files
+            print()
+            print("A. IMPORT ALL")
+            print("B. BACK")
 
-            ]
+            choice = input(
+                "\nENTER CHOICE : "
+            ).strip().upper()
 
-        try:
+            if choice == "B":
 
-            selected = []
+                return None
 
-            indexes = choice.split(",")
+            if choice == "A":
 
-            for value in indexes:
-
-                value = value.strip()
-
-                index = int(
-                    value
-                )
-
-                if index < 1 or index > len(files):
-
-                    raise ValueError
-
-                selected.append(
+                return [
 
                     os.path.join(
                         folder,
-                        files[
-                            index - 1
-                        ]
+                        file
                     )
 
+                    for file in files
+
+                ]
+
+            try:
+
+                selected = []
+
+                used = set()
+
+                for value in choice.split(","):
+
+                    value = value.strip()
+
+                    index = int(
+                        value
+                    )
+
+                    if index < 1 or index > len(files):
+
+                        raise ValueError
+
+                    if index in used:
+
+                        continue
+
+                    used.add(
+                        index
+                    )
+
+                    selected.append(
+
+                        os.path.join(
+
+                            folder,
+
+                            files[
+                                index - 1
+                            ]
+
+                        )
+
+                    )
+
+                return selected
+
+            except ValueError:
+
+                print(
+                    "\nINVALID CHOICE. PLEASE TRY AGAIN."
                 )
-
-            return selected
-
-        except:
-
-            print(
-                "\nINVALID CHOICE."
-            )
-
-            return None

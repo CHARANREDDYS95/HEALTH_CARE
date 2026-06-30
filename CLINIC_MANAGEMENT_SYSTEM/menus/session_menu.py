@@ -30,36 +30,66 @@ class SessionMenu:
                 "ENTER END TIME (HH:MM AM/PM): "
             )
 
-            max_patients = InputHelper.get_integer(
-                "ENTER MAX PATIENTS: "
-            )
-
             confirm = InputHelper.get_confirmation()
 
             if confirm == "N":
 
-                print("SESSION CREATION CANCELLED")
+                print(
+                    "SESSION CREATION CANCELLED"
+                )
+
                 return
 
             session_id = SessionService.add_session(
+
                 session_name,
+
                 room_id,
+
                 start_time,
-                end_time,
-                max_patients
+
+                end_time
+
+            )
+
+            session = SessionService.search_session_by_id(
+                session_id
+            )
+
+            print()
+
+            print(
+                "=========================================="
             )
 
             print(
-                f"\nSESSION ADDED SUCCESSFULLY. ID: {session_id}"
+                "SESSION ADDED SUCCESSFULLY"
+            )
+
+            print(
+                "=========================================="
+            )
+
+            print(
+                f"SESSION ID    : {session_id}"
+            )
+
+            print(
+                f"MAX PATIENTS  : {session.max_patients}"
             )
 
         except OperationCancelled as e:
 
-            print(e)
+            print(
+                e
+            )
 
         except Exception as e:
 
-            print("ERROR:", e)
+            print(
+                "ERROR:",
+                e
+            )
 
     @staticmethod
     def search_session():
@@ -225,11 +255,15 @@ class SessionMenu:
                 print(
                     "SESSION NOT FOUND"
                 )
+
                 return
 
             session_name = InputHelper.get_update_input(
+
                 "ENTER SESSION NAME",
+
                 session.session_name
+
             ).strip().upper()
 
             print("\nSELECT ROOM")
@@ -238,7 +272,9 @@ class SessionMenu:
             print("PRESS ENTER TO KEEP CURRENT ROOM")
 
             room_choice = input(
+
                 f"ENTER CHOICE [{'1' if session.room_id == 'CR1' else '2'}]: "
+
             ).strip()
 
             if room_choice.upper() == "CANCEL":
@@ -261,22 +297,26 @@ class SessionMenu:
 
             else:
 
-                print("INVALID ROOM CHOICE")
+                print(
+                    "INVALID ROOM CHOICE"
+                )
+
                 return
 
             start_time = InputHelper.get_update_time(
+
                 "ENTER START TIME (HH:MM AM/PM)",
+
                 session.start_time
+
             )
 
             end_time = InputHelper.get_update_time(
-                "ENTER END TIME (HH:MM AM/PM)",
-                session.end_time
-            )
 
-            max_patients = InputHelper.get_update_integer(
-                "ENTER MAX PATIENTS",
-                session.max_patients
+                "ENTER END TIME (HH:MM AM/PM)",
+
+                session.end_time
+
             )
 
             confirm = InputHelper.get_confirmation()
@@ -286,24 +326,42 @@ class SessionMenu:
                 print(
                     "SESSION UPDATE CANCELLED"
                 )
+
                 return
 
             SessionService.update_session(
+
                 session_id,
+
                 session_name,
+
                 room_id,
+
                 start_time,
-                end_time,
-                max_patients
+
+                end_time
+
             )
+
+            session = SessionService.search_session_by_id(
+                session_id
+            )
+
+            print()
 
             print(
                 "SESSION UPDATED SUCCESSFULLY"
             )
 
+            print(
+                f"MAX PATIENTS : {session.max_patients}"
+            )
+
         except OperationCancelled as e:
 
-            print(e)
+            print(
+                e
+            )
 
             return
 

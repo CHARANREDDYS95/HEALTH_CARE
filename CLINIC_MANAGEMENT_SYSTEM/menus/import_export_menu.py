@@ -9,6 +9,9 @@ from utils.input_helper import (
 from utils.file_selector import (
     FileSelector
 )
+from utils.import_log import (
+    ImportLog
+)
 
 
 
@@ -193,6 +196,8 @@ class ImportExportMenu:
                 selected_files
             )
 
+            all_errors = []
+
             print("\n==============================================================")
             print("                    IMPORT SUMMARY")
             print("==============================================================")
@@ -201,21 +206,16 @@ class ImportExportMenu:
                 f"FILES SELECTED : {total_files}"
             )
 
-            print("-" * 62)
+            print()
 
             print(
-
-                f"{'GRAND TOTAL':30}"
-                
-                f"{grand_total:>8}"
-                
-                f"{grand_imported:>12}"
-
-                f"{grand_skipped:>10}"
-
+                f"{'FILE NAME':30}"
+                f"{'TOTAL':>8}"
+                f"{'IMPORTED':>12}"
+                f"{'SKIPPED':>10}"
             )
 
-            print("=" * 62)
+            print("-" * 62)
 
             for file_path in selected_files:
 
@@ -240,7 +240,7 @@ class ImportExportMenu:
 
                 print(
 
-                    f"{file_path.split('/')[-1]:30}"
+                    f"{os.path.basename(file_path):30}"
 
                     f"{result['total']:>8}"
 
@@ -252,12 +252,20 @@ class ImportExportMenu:
 
                 if result["errors"]:
 
-                    for error in result["errors"]:
+                    all_errors.append({
 
-                        print(
-                            f"   - {error}"
-                        )
+                        "file":
 
+                        os.path.basename(
+                            file_path
+                        ),
+
+                        "errors":
+
+                        result["errors"]
+
+                    })
+                        
             print("-" * 62)
 
             print(
@@ -272,6 +280,66 @@ class ImportExportMenu:
 
             )
 
+            print("=" * 62)
+
+            if all_errors:
+
+                print("\n==============================================================")
+                print("                    ERROR DETAILS")
+                print("==============================================================")
+
+                for item in all_errors:
+
+                    print()
+
+                    print(
+                        f"FILE : {item['file']}"
+                    )
+
+                    print()
+
+                    for error in item["errors"]:
+
+                        print(
+                            error
+                        )
+
+                log_file = ImportLog.save_log(
+
+                    "DOCTOR",
+
+                    all_errors
+
+                )
+
+                if log_file:
+
+                    print()
+
+                    print("==============================================================")
+                    print("                     IMPORT LOG")
+                    print("==============================================================")
+
+                    print(
+                        f"LOG FILE : {log_file}"
+                    )
+
+                    print("=" * 62)
+
+            else:
+
+                print()
+
+                print(
+                    "ALL RECORDS IMPORTED SUCCESSFULLY."
+                )
+
+            print()
+
+            input(
+                "PRESS ENTER TO CONTINUE..."
+            )
+
         except OperationCancelled:
 
             print(
@@ -283,6 +351,8 @@ class ImportExportMenu:
             print(
                 f"ERROR : {e}"
             )
+            
+
                 
     @staticmethod
     def export_doctors():
@@ -305,8 +375,11 @@ class ImportExportMenu:
             format_map = {
 
                 "1": "CSV",
+
                 "2": "EXCEL",
+
                 "3": "JSON",
+
                 "4": "TXT"
 
             }
@@ -323,18 +396,48 @@ class ImportExportMenu:
                 choice
             ]
 
-            file_path = (
+            result = (
                 ImportExportService.export_doctors(
                     file_format
                 )
             )
 
-            print("\n===================================")
-            print("      EXPORT SUCCESSFUL")
-            print("===================================")
+            print("\n==============================================================")
+            print("                    EXPORT SUMMARY")
+            print("==============================================================")
 
             print(
-                f"FILE SAVED TO : {file_path}"
+                f"MODULE        : {result['module']}"
+            )
+
+            print(
+                f"FORMAT        : {result['format']}"
+            )
+
+            print(
+                f"TOTAL RECORDS : {result['total_records']}"
+            )
+
+            print(
+                f"FILE NAME     : {os.path.basename(result['file_path'])}"
+            )
+
+            print(
+                f"LOCATION      : {os.path.dirname(result['file_path'])}"
+            )
+
+            print("==============================================================")
+
+            print()
+
+            print(
+                "EXPORT COMPLETED SUCCESSFULLY."
+            )
+
+            print()
+
+            input(
+                "PRESS ENTER TO CONTINUE..."
             )
 
         except OperationCancelled:
@@ -423,6 +526,8 @@ class ImportExportMenu:
                 selected_files
             )
 
+            all_errors = []
+
             print("\n==============================================================")
             print("                    IMPORT SUMMARY")
             print("==============================================================")
@@ -441,7 +546,6 @@ class ImportExportMenu:
             )
 
             print("-" * 62)
-
 
             for file_path in selected_files:
 
@@ -467,23 +571,31 @@ class ImportExportMenu:
                 print(
 
                     f"{os.path.basename(file_path):30}"
-                    
+
                     f"{result['total']:>8}"
-                    
+
                     f"{result['imported']:>12}"
-                    
+
                     f"{result['skipped']:>10}"
 
-                )   
+                )
 
                 if result["errors"]:
 
-                    for error in result["errors"]:
+                    all_errors.append({
 
-                        print(
-                            f"   - {error}"
-                        )
+                        "file":
 
+                        os.path.basename(
+                            file_path
+                        ),
+
+                        "errors":
+
+                        result["errors"]
+
+                    })
+                        
             print("-" * 62)
 
             print(
@@ -496,6 +608,66 @@ class ImportExportMenu:
 
                 f"{grand_skipped:>10}"
 
+            )
+
+            print("=" * 62)
+
+            if all_errors:
+
+                print("\n==============================================================")
+                print("                    ERROR DETAILS")
+                print("==============================================================")
+
+                for item in all_errors:
+
+                    print()
+
+                    print(
+                        f"FILE : {item['file']}"
+                    )
+
+                    print()
+
+                    for error in item["errors"]:
+
+                        print(
+                            error
+                        )
+
+                log_file = ImportLog.save_log(
+
+                    "DOCTOR",
+
+                    all_errors
+
+                )
+
+                if log_file:
+
+                    print()
+
+                    print("==============================================================")
+                    print("                      IMPORT LOG")
+                    print("==============================================================")
+
+                    print(
+                        f"LOG FILE : {log_file}"
+                    )
+
+                    print("=" * 62)
+
+            else:
+
+                print()
+
+                print(
+                    "ALL RECORDS IMPORTED SUCCESSFULLY."
+                )
+
+            print()
+
+            input(
+                "PRESS ENTER TO CONTINUE..."
             )
 
         except OperationCancelled:
@@ -531,8 +703,11 @@ class ImportExportMenu:
             format_map = {
 
                 "1": "CSV",
+
                 "2": "EXCEL",
+
                 "3": "JSON",
+
                 "4": "TXT"
 
             }
@@ -549,18 +724,48 @@ class ImportExportMenu:
                 choice
             ]
 
-            file_path = (
+            result = (
                 ImportExportService.export_patients(
                     file_format
                 )
             )
 
-            print("\n===================================")
-            print("      EXPORT SUCCESSFUL")
-            print("===================================")
+            print("\n==============================================================")
+            print("                    EXPORT SUMMARY")
+            print("==============================================================")
 
             print(
-                f"FILE SAVED TO : {file_path}"
+                f"MODULE        : {result['module']}"
+            )
+
+            print(
+                f"FORMAT        : {result['format']}"
+            )
+
+            print(
+                f"TOTAL RECORDS : {result['total_records']}"
+            )
+
+            print(
+                f"FILE NAME     : {os.path.basename(result['file_path'])}"
+            )
+
+            print(
+                f"LOCATION      : {os.path.dirname(result['file_path'])}"
+            )
+
+            print("==============================================================")
+
+            print()
+
+            print(
+                "EXPORT COMPLETED SUCCESSFULLY."
+            )
+
+            print()
+
+            input(
+                "PRESS ENTER TO CONTINUE..."
             )
 
         except OperationCancelled:

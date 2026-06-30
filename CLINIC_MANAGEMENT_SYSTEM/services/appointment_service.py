@@ -11,17 +11,10 @@ from models.patient_master import PatientMaster
 from models.doctor_availability import DoctorAvailability
 from models.doctor_master import DoctorMaster
 from models.session_master import SessionMaster
-from datetime import datetime, timedelta
-from config.config_reader import (
-    ConfigReader
+from utils.appointment_slot_generator import (
+    AppointmentSlotGenerator
 )
 
-CONSULTATION_DURATION = int(
-    ConfigReader.get(
-        "consultation_duration.txt",
-        "CONSULTATION_DURATION"
-    )
-)
 
 class AppointmentService:
 
@@ -251,42 +244,42 @@ class AppointmentService:
                 )
             ).scalars().all()
 
-            start_time = datetime.strptime(
-                session_master.start_time,
-                "%I:%M %p"
+            slots = (
+
+                AppointmentSlotGenerator.generate_slots(
+
+                    session_master.start_time,
+
+                    session_master.end_time
+
+                )
+
             )
 
             tokens = []
 
-            for token in range(
-                1,
-                session_master.max_patients + 1
-            ):
-
-                consultation_time = (
-                    start_time
-                    +
-                    timedelta(
-                        minutes=(
-                            token - 1
-                        ) * CONSULTATION_DURATION
-                    )
-                ).strftime(
-                    "%I:%M %p"
-                )
+            for slot in slots:
 
                 status = (
+
                     "BOOKED"
-                    if token in booked_tokens
+
+                    if slot["slot_no"] in booked_tokens
+
                     else "AVAILABLE"
+
                 )
 
                 tokens.append(
 
                     (
-                        token,
-                        consultation_time,
+
+                        slot["slot_no"],
+
+                        f"{slot['start_time']} - {slot['end_time']}",
+
                         status
+
                     )
 
                 )
@@ -322,6 +315,15 @@ class AppointmentService:
                     "DOCTOR AVAILABILITY NOT FOUND"
                 )
 
+            session_master = session.execute(
+                select(
+                    SessionMaster
+                ).where(
+                    SessionMaster.session_id
+                    == availability.session_id
+                )
+            ).scalar_one()
+
             booked_tokens = session.execute(
                 select(
                     AppointmentMaster.token_no
@@ -337,43 +339,44 @@ class AppointmentService:
                 )
             ).scalars().all()
 
-            token_status = []
+            slots = (
 
-            start_time = datetime.combine(
-                appointment_date,
-                availability.start_time
+                AppointmentSlotGenerator.generate_slots(
+
+                    session_master.start_time,
+
+                    session_master.end_time
+
+                )
+
             )
 
-            for token in range(
-                1,
-                availability.max_patients + 1
-            ):
+            token_status = []
 
-                consultation_time = (
-                    start_time
-                    +
-                    timedelta(
-                        minutes=
-                        (
-                            token - 1
-                        )
-                        *
-                        CONSULTATION_DURATION
-                    )
-                ).time()
+            for slot in slots:
 
                 status = (
+
                     "BOOKED"
-                    if token in booked_tokens
+
+                    if slot["slot_no"] in booked_tokens
+
                     else "AVAILABLE"
+
                 )
 
                 token_status.append(
 
                     (
-                        token,
-                        consultation_time,
+
+                        slot["slot_no"],
+
+                        slot["start_time"],
+
+                        slot["end_time"],
+
                         status
+
                     )
 
                 )
